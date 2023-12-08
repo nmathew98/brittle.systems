@@ -9,6 +9,7 @@ export default defineConfig({
   integrations: [tailwind(), mdx({
     optimize: true
   })],
+  prefetch: true,
   markdown: {
     shikiConfig: {
       theme: 'github-dark',
