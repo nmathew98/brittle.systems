@@ -1,5 +1,5 @@
 ---
-
+import { SEO } from "astro-seo";
 ---
 
 <html lang="en">
@@ -9,7 +9,13 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<!-- Sitemap support -->
+		<link rel="sitemap" href="/sitemap-index.xml" />
+		<!-- Inter -->
+		<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+		<!-- Monaspace Argon v1.0 -->
+		<link rel="stylesheet" href="/fonts/monaspace/monaspace.css">
+		<SEO title="Astro" />
 	</head>
 	<body>
 		<h1>Astro</h1>
