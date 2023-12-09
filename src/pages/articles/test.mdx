@@ -8,7 +8,7 @@ section: "Test"
 
 import Image from "../../components/Article/Image.astro";
 
-export const components = { img: Image }; // TODO: Defining `components` not doing anything, but using `<Image />` works
+export const components = { img: Image };
 export const published = new Date("09/12/2023");
 export const modified = new Date("09/12/2023");
 export const tags = ["testing", "testing", "123"];
@@ -32,11 +32,6 @@ This is a list:
 -   Item 1
 -   Item 2
 -   Item 3
-
-<Image
-	src="https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_1280.png"
-	alt="A single track trail outside of Albuquerque, New Mexico."
-/>
 
 ![A single track trail outside of Albuquerque, New Mexico.](https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_1280.png "A single track trail outside of Albuquerque, New Mexico.")
 
