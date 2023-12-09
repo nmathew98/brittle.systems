@@ -77,8 +77,8 @@ const tags = getArticleTags();
 	/>
 	<body>
 		<div
-			class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 my-8 flex flex-col lg:grid lg:justify-center lg:grid-cols-6">
-			<!-- Activates for < lg -->
+			class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 my-8 flex flex-col lg:grid lg:justify-center lg:grid-cols-8">
+			<!-- < lg -->
 			<div class="block lg:hidden mb-16 text-orange-50">
 				<h1 class="text-2xl font-bold break-words">
 					{frontmatter.title}
@@ -87,48 +87,42 @@ const tags = getArticleTags();
 					{frontmatter.description}
 				</h3>
 			</div>
-			<!-- Only activates for large screen sizes -->
+			<!-- >= lg -->
 			<div
-				class="hidden lg:flex lg:col-span-2 lg:flex-col lg:space-y-20 lg:max-w-sm justify-between text-sky-900">
+				class="hidden lg:flex col-span-3 flex-col space-y-20 max-w-xs justify-between break-words text-sky-900">
 				<div>
-					<h1 class="text-5xl font-bold break-words">
+					<h1 class="text-5xl font-bold">
 						{frontmatter.title}
 					</h1>
-					<h3 class="text-lg font-normal italic break-words">
+					<h3 class="text-base font-normal italic">
 						{frontmatter.description}
 					</h3>
 				</div>
 				<div class="flex flex-col">
-					<span class="font-medium break-words">
-						By: {frontmatter.author}
+					<span class="font-medium">
+						{frontmatter.author}
 					</span>
-					<span class="font-medium break-words">
-						Published: {new Date(publishedTime).toDateString()}
+					<span class="font-medium">
+						{new Date(modifiedTime).toDateString()}
 					</span>
-					<span class="font-medium break-words">
-						Updated: {new Date(publishedTime).toDateString()}
-					</span>
-					<div class="mt-8">
-						<span class="font-light">Tags</span>
-						{
-							!!tags && (
-								<div class="flex space-x-1 font-light">
-									{tags.map((tag: string) => (
-										<span>#{tag}</span>
-									))}
-								</div>
-							)
-						}
-					</div>
+					{
+						!!tags && (
+							<div class="flex space-x-1 font-light">
+								{tags.map((tag: string) => (
+									<span>#{tag}</span>
+								))}
+							</div>
+						)
+					}
 				</div>
 			</div>
 			<article
-				class="col-span-4 prose prose-invert prose-slate
+				class="col-span-5 prose prose-invert prose-slate
 					prose-p:font-serif prose-li:font-serif
 					prose-base md:prose-lg lg:prose-2xl">
 				<slot />
 			</article>
-			<!-- Activates for < lg -->
+			<!-- < lg -->
 			<div class="block lg:hidden mt-16">
 				<div
 					class="flex flex-col text-orange-50 font-serif text-md break-words">
@@ -136,7 +130,7 @@ const tags = getArticleTags();
 						{frontmatter.author}
 					</span>
 					<span>
-						{new Date(publishedTime).toDateString()}
+						{new Date(modifiedTime).toDateString()}
 					</span>
 				</div>
 			</div>
