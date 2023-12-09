@@ -137,8 +137,28 @@ const tags = getArticleTags();
 	</body>
 </Base>
 
-<style>
+<style scoped>
 	body {
 		@apply bg-slate-950;
+	}
+</style>
+
+<style is:global>
+	code {
+		counter-reset: line;
+	}
+
+	[data-line]::before {
+		counter-increment: line;
+		content: counter(line);
+		@apply mr-4 text-orange-50;
+	}
+
+	[data-line][data-highlighted-line]::before {
+		@apply text-orange-500;
+	}
+
+	[data-highlighted-line] {
+		background-color: rgba(255, 255, 255, 0.05);
 	}
 </style>

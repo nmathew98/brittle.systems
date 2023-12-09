@@ -37,7 +37,21 @@ This is a list:
 
 ## Some code
 
-```typescript
+```typescript {4-5}
+type Result = "pass" | "fail";
+
+function verify(result: Result) {
+	if (result === "pass") {
+		console.log("Passed");
+	} else {
+		console.log("Failed");
+	}
+}
+```
+
+## More code
+
+```typescript {4-5}
 type Result = "pass" | "fail";
 
 function verify(result: Result) {
