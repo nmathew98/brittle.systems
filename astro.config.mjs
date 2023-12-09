@@ -14,7 +14,9 @@ export default defineConfig({
 	integrations: [
 		tailwind(),
 		mdx({
-			optimize: true,
+			optimize: {
+				customComponentNames: ["img"],
+			},
 		}),
 		sitemap(),
 	],

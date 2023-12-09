@@ -1,0 +1,18 @@
+---
+const caption = Astro.props.title || Astro.props.alt;
+---
+
+{!caption && <img {...Astro.props} />}
+
+{
+	caption && (
+		<figure>
+			<img {...Astro.props} />
+			{caption && (
+				<figcaption class="text-center">
+					<i>{caption}</i>
+				</figcaption>
+			)}
+		</figure>
+	)
+}
