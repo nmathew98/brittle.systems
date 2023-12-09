@@ -1,6 +1,5 @@
 import { defineConfig, passthroughImageService } from "astro/config";
 import tailwind from "@astrojs/tailwind";
-import cloudflare from "@astrojs/cloudflare";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 
@@ -10,12 +9,14 @@ export default defineConfig({
 	image: {
 		// Cloudflare does not support Astro's built in image optimization
 		// see: https://docs.astro.build/en/guides/images/#configure-no-op-passthrough-service
-		service: passthroughImageService()
+		service: passthroughImageService(),
 	},
 	integrations: [
 		tailwind(),
 		mdx({
-			optimize: true,
+			optimize: {
+				customComponentNames: ["img"],
+			},
 		}),
 		sitemap(),
 	],
@@ -26,13 +27,5 @@ export default defineConfig({
 			wrap: true,
 		},
 	},
-	output: "server",
-	adapter: cloudflare({
-		mode: "directory",
-		imageService: "cloudflare",
-		runtime: {
-			type: "pages",
-			mode: "off",
-		},
-	}),
+	output: "static",
 });

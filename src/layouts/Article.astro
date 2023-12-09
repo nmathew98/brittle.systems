@@ -1,0 +1,144 @@
+---
+import Base from "./Base.astro";
+import { SEO } from "astro-seo";
+import { evaluate } from "@mdx-js/mdx";
+import { readFile } from "node:fs/promises";
+
+export interface Article extends Awaited<ReturnType<typeof evaluate>> {
+	tags?: string[] | string;
+	published?: Date;
+	modified?: Date;
+}
+
+const { file, frontmatter } = Astro.props;
+
+const raw = await readFile(file);
+
+// Since we're mocking the runtime to just obtain metadata exports
+// we need to strip out custom components
+const importsStripped = raw
+	.toString()
+	.replaceAll(/import .*|export const components .*/gi, "");
+const mocked = new Proxy(Object.create(null), {
+	get: () => () => {},
+});
+const article: Article = await evaluate(importsStripped, mocked);
+
+const getArticleTags = () => {
+	if (
+		article.tags &&
+		(Array.isArray(article.tags) || typeof article.tags === "string")
+	) {
+		if (Array.isArray(article.tags)) {
+			return article.tags;
+		}
+
+		return article.tags.split(", ");
+	}
+
+	return frontmatter.tags.split(", ");
+};
+
+const publishedTime =
+	article.published instanceof Date
+		? article.published.toISOString()
+		: undefined;
+const modifiedTime =
+	article.modified instanceof Date
+		? article.modified.toISOString()
+		: undefined;
+const tags = getArticleTags();
+---
+
+<Base>
+	<SEO
+		title={`${frontmatter.title} | brittle.systems`}
+		description={frontmatter.description}
+		openGraph={{
+			basic: {
+				title: frontmatter.title,
+				type: "article",
+				// TODO: Same as favicon
+				image: "",
+			},
+			optional: {
+				description: frontmatter.description,
+			},
+			article: {
+				authors: [frontmatter.author],
+				publishedTime: publishedTime,
+				modifiedTime: modifiedTime,
+				section: frontmatter.section,
+				tags: tags,
+			},
+		}}
+		slot="head"
+	/>
+	<body>
+		<div
+			class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 my-8 flex flex-col lg:grid lg:justify-center lg:grid-cols-8">
+			<!-- < lg -->
+			<div class="block lg:hidden mb-16 text-orange-50">
+				<h1 class="text-2xl font-bold break-words">
+					{frontmatter.title}
+				</h1>
+				<h2 class="text-lg font-normal italic break-words">
+					{frontmatter.description}
+				</h2>
+			</div>
+			<!-- >= lg -->
+			<div
+				class="hidden lg:flex col-span-3 flex-col space-y-20 max-w-xs justify-between break-words text-sky-900">
+				<div>
+					<h1 class="text-5xl font-bold">
+						{frontmatter.title}
+					</h1>
+					<h3 class="text-base font-normal italic">
+						{frontmatter.description}
+					</h3>
+				</div>
+				<div class="flex flex-col">
+					<span class="font-medium">
+						{frontmatter.author}
+					</span>
+					<span class="font-medium">
+						{new Date(modifiedTime).toDateString()}
+					</span>
+					{
+						!!tags && (
+							<div class="flex space-x-1 font-light">
+								{tags.map((tag: string) => (
+									<span>#{tag}</span>
+								))}
+							</div>
+						)
+					}
+				</div>
+			</div>
+			<article
+				class="col-span-5 prose prose-invert prose-slate
+					prose-p:font-serif prose-li:font-serif
+					prose-base md:prose-lg lg:prose-2xl">
+				<slot />
+			</article>
+			<!-- < lg -->
+			<div class="block lg:hidden mt-16">
+				<div
+					class="flex flex-col text-orange-50 font-serif text-md break-words">
+					<span>
+						{frontmatter.author}
+					</span>
+					<span>
+						{new Date(modifiedTime).toDateString()}
+					</span>
+				</div>
+			</div>
+		</div>
+	</body>
+</Base>
+
+<style>
+	body {
+		@apply bg-slate-950;
+	}
+</style>

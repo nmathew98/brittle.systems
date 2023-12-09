@@ -1,23 +1,60 @@
 ---
-import { SEO } from "astro-seo";
+import Base from "../layouts/Base.astro";
+
+const sortArticlesByPublishedAscending = (x, y) => x.published - y.published;
+const getArticleInformation = (articles: any[]) =>
+	articles.sort(sortArticlesByPublishedAscending).map(article => ({
+		frontmatter: article.frontmatter,
+		headings: article.getHeadings(),
+		url: article.url,
+		published: article.published,
+		modified: article.modified,
+		tags: article.tags,
+	}));
+
+const articles: any[] = getArticleInformation(
+	await Astro.glob("../pages/articles/*.mdx"),
+);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<!-- TODO -->
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<!-- Sitemap support -->
-		<link rel="sitemap" href="/sitemap-index.xml" />
-		<!-- Inter -->
-		<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-		<!-- Monaspace Argon v1.0 -->
-		<link rel="stylesheet" href="/fonts/monaspace/monaspace.css">
-		<SEO title="Astro" />
-	</head>
+<Base>
 	<body>
-		<h1>Astro</h1>
+		<div
+			class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 my-8
+			prose prose-slate prose-invert prose-base md:prose-lg lg:prose-2xl
+			grid justify-center">
+			<div>
+				<h1 class="text-center"><em>under construction</em><br />🚧</h1>
+			</div>
+			<ul class="max-w-fit px-10 py-5 rounded-3xl list-none">
+				{
+					articles.map(article => (
+						<li>
+							<a href={article.url}>
+								{article.frontmatter.title}
+							</a>
+							<ol class="grid grid-cols-2">
+								{article.headings
+									.filter(heading => heading.depth === 2)
+									.map(heading => (
+										<li>
+											<a
+												href={`${article.url}/#${heading.slug}`}>
+												{heading.text}
+											</a>
+										</li>
+									))}
+							</ol>
+						</li>
+					))
+				}
+			</ul>
+		</div>
 	</body>
-</html>
+</Base>
+
+<style>
+	body {
+		@apply bg-slate-950;
+	}
+</style>
