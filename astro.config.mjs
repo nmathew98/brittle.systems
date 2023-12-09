@@ -1,6 +1,5 @@
 import { defineConfig, passthroughImageService } from "astro/config";
 import tailwind from "@astrojs/tailwind";
-import cloudflare from "@astrojs/cloudflare";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 
@@ -26,13 +25,5 @@ export default defineConfig({
 			wrap: true,
 		},
 	},
-	output: "server",
-	adapter: cloudflare({
-		mode: "directory",
-		imageService: "cloudflare",
-		runtime: {
-			type: "pages",
-			mode: "off",
-		},
-	}),
+	output: "static",
 });
