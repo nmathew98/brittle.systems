@@ -1,23 +1,17 @@
----
-import { SEO } from "astro-seo";
----
-
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<!-- TODO -->
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> -->
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<!-- Sitemap support -->
 		<link rel="sitemap" href="/sitemap-index.xml" />
-		<!-- Inter -->
-		<link rel="preload stylesheet" href="https://rsms.me/inter/inter.css" />
 		<!-- Monaspace Argon v1.0 -->
 		<link rel="preload stylesheet" href="/fonts/monaspace/monaspace.css" />
-		<SEO title="Astro" />
+		<link rel="preload stylesheet" href="https://rsms.me/inter/inter.css" />
+		<slot name="head" />
 	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+	<slot />
+
+
 </html>
