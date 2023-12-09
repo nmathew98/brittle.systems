@@ -82,14 +82,16 @@ const tags = getArticleTags();
 			<div
 				class="hidden lg:flex col-span-3 flex-col space-y-20 max-w-xs justify-between break-words text-sky-900">
 				<header>
-					<h1 class="text-5xl font-bold">
+					<h1 class="text-6xl font-bold hyphens-auto" lang="en">
 						{frontmatter.title}
 					</h1>
-					<h2 class="text-base font-normal italic">
+					<h2
+						class="text-lg font-normal mt-4 italic hyphens-auto"
+						lang="en">
 						{frontmatter.description}
 					</h2>
 				</header>
-				<footer>
+				<footer class="text-lg">
 					<div class="flex justify-between items-center">
 						<div class="flex flex-col">
 							<a
@@ -131,13 +133,15 @@ const tags = getArticleTags();
 			<article
 				class="col-span-5 prose prose-invert prose-slate
 					prose-p:font-serif prose-li:font-serif
-					prose-lg md:prose-2xl lg:prose-4xl">
+					prose-base md:prose-2xl lg:prose-7xl">
 				<!-- `< lg`, prose has `max-width` stuff which affects the margins -->
 				<header class="not-prose lg:hidden mb-16 text-orange-50">
-					<h1 class="text-2xl font-bold break-words">
+					<h1
+						class="text-2xl md:text-5xl font-bold break-words hyphens-auto">
 						{frontmatter.title}
 					</h1>
-					<h2 class="text-sm font-normal italic break-words">
+					<h2
+						class="text-base mt-4 md:text-xl font-normal italic break-words hyphens-auto">
 						{frontmatter.description}
 					</h2>
 				</header>
@@ -147,13 +151,14 @@ const tags = getArticleTags();
 				<div
 					class="col-span-5 prose prose-invert prose-slate
 						prose-p:font-serif prose-li:font-serif
-						prose-lg md:prose-2xl lg:prose-4xl">
+						prose-base md:prose-2xl lg:prose-7xl">
 					<slot />
 				</div>
 				<!-- `< lg`, prose has `max-width` stuff which affects the margins -->
 				<footer
 					class="not-prose lg:hidden mt-16 flex justify-between items-center">
-					<div class="text-sm text-orange-500 flex flex-col">
+					<div
+						class="text-base md:text-xl text-orange-500 flex flex-col">
 						<a
 							rel="author"
 							href={`mailto:${frontmatter.author_email}`}>
@@ -174,7 +179,7 @@ const tags = getArticleTags();
 									text-white hover:text-slate-950
 									opacity-25 hover:opacity-100">
 							<HomeModernIcon
-								className="transition duration-50 h-5 w-5 lg:h-8 lg:w-8"
+								className="transition duration-50 h-6 w-6 md:h-8 md:w-8"
 							/>
 						</div>
 					</a>
