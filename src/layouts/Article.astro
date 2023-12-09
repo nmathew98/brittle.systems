@@ -3,6 +3,7 @@ import Base from "./Base.astro";
 import { SEO } from "astro-seo";
 import { evaluate } from "@mdx-js/mdx";
 import { readFile } from "node:fs/promises";
+import { HomeModernIcon } from "@heroicons/react/24/solid";
 
 export interface Article extends Awaited<ReturnType<typeof evaluate>> {
 	tags?: string[] | string;
@@ -77,7 +78,7 @@ const tags = getArticleTags();
 	<body>
 		<div
 			class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 my-8 flex flex-col items-center lg:items-stretch lg:grid lg:justify-center lg:grid-cols-8">
-			<!-- >= lg -->
+			<!-- `>= lg` -->
 			<div
 				class="hidden lg:flex col-span-3 flex-col space-y-20 max-w-xs justify-between break-words text-sky-900">
 				<header>
@@ -88,15 +89,34 @@ const tags = getArticleTags();
 						{frontmatter.description}
 					</h2>
 				</header>
-				<footer class="flex flex-col">
-					<a rel="author" href={`mailto:${frontmatter.author_email}`}>
-						{frontmatter.author}
-					</a>
-					<time
-						datetime={new Date(modifiedTime).toDateString()}
-						title={new Date(modifiedTime).toDateString()}>
-						{new Date(modifiedTime).toDateString()}
-					</time>
+				<footer>
+					<div class="flex justify-between">
+						<div class="flex flex-col">
+							<a
+								rel="author"
+								href={`mailto:${frontmatter.author_email}`}>
+								{frontmatter.author}
+							</a>
+							<time
+								datetime={new Date(modifiedTime).toDateString()}
+								title={new Date(modifiedTime).toDateString()}>
+								{new Date(modifiedTime).toDateString()}
+							</time>
+						</div>
+						<!-- Home -->
+						<a href="/">
+							<div
+								class="transition duration-50 rounded-full
+									outline outline-orange-500 bg-transparent hover:bg-orange-500
+									p-2 inline-flex items-center
+									text-white hover:text-slate-950
+									opacity-25 hover:opacity-100">
+								<HomeModernIcon
+									className="transition duration-50 h-6 w-6"
+								/>
+							</div>
+						</a>
+					</div>
 					{
 						!!tags && (
 							<div class="flex space-x-1 font-light">
@@ -111,7 +131,7 @@ const tags = getArticleTags();
 			<article
 				class="col-span-5 prose prose-invert prose-slate
 					prose-p:font-serif prose-li:font-serif
-					prose-base md:prose-lg lg:prose-2xl">
+					prose-lg md:prose-2xl lg:prose-4xl">
 				<!-- `< lg`, prose has `max-width` stuff which affects the margins -->
 				<header class="not-prose lg:hidden mb-16 text-orange-50">
 					<h1 class="text-2xl font-bold break-words">
@@ -131,21 +151,44 @@ const tags = getArticleTags();
 					<slot />
 				</div>
 				<!-- `< lg`, prose has `max-width` stuff which affects the margins -->
-				<footer
-					class="not-prose lg:hidden mt-16 text-sm text-orange-500 flex flex-col">
-					<a rel="author" href={`mailto:${frontmatter.author_email}`}>
-						{frontmatter.author}
+				<footer class="not-prose lg:hidden mt-16 flex justify-between">
+					<div class="text-sm text-orange-500 flex flex-col">
+						<a
+							rel="author"
+							href={`mailto:${frontmatter.author_email}`}>
+							{frontmatter.author}
+						</a>
+						<time
+							datetime={new Date(modifiedTime).toDateString()}
+							title={new Date(modifiedTime).toDateString()}>
+							{new Date(modifiedTime).toDateString()}
+						</time>
+					</div>
+					<!-- Home -->
+					<a href="/" class="mr-2">
+						<div
+							class="transition duration-50 rounded-full
+									outline outline-orange-500 bg-transparent hover:bg-orange-500
+									p-2 inline-flex items-center
+									text-white hover:text-slate-950
+									opacity-25 hover:opacity-100">
+							<HomeModernIcon
+								className="transition duration-50 h-6 w-6 lg:h-8 lg:w-8"
+							/>
+						</div>
 					</a>
-					<time
-						datetime={new Date(modifiedTime).toDateString()}
-						title={new Date(modifiedTime).toDateString()}>
-						{new Date(modifiedTime).toDateString()}
-					</time>
 				</footer>
 			</article>
 		</div>
 	</body>
 </Base>
+
+<script lang="ts">
+	document.addEventListener("keydown", event => {
+		if (event.key === "Backspace" || event.key === "Escape")
+			location.pathname = "/";
+	});
+</script>
 
 <style scoped>
 	body {
