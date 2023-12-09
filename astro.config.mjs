@@ -21,7 +21,7 @@ export default defineConfig({
 		tailwind(),
 		mdx({
 			optimize: {
-				customComponentNames: ["img"],
+				customComponentNames: ["img", "a"],
 			},
 		}),
 		sitemap(),

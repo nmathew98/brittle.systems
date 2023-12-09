@@ -8,8 +8,9 @@ section: "Test"
 ---
 
 import Image from "../../components/Article/Image.astro";
+import Link from "../../components/Article/Link.astro";
 
-export const components = { img: Image };
+export const components = { img: Image, a: Link };
 export const published = new Date("09/12/2023");
 export const modified = new Date("09/12/2023");
 export const tags = ["testing", "testing", "123"];
