@@ -13,10 +13,17 @@ interface Article extends Awaited<ReturnType<typeof evaluate>> {
 const { file, frontmatter } = Astro.props;
 
 const raw = await readFile(file);
+
+// Since we're mocking the runtime to just obtain metadata exports
+// we need to strip out custom components, this also means any custom component
+// used has to be a native element substitute
+const importsStripped = raw
+	.toString()
+	.replaceAll(/import .*|export const components .*/gi, "");
 const mocked = new Proxy(Object.create(null), {
 	get: () => () => {},
 });
-const article: Article = await evaluate(raw, mocked);
+const article: Article = await evaluate(importsStripped, mocked);
 
 const getArticleTags = () => {
 	if (
@@ -68,5 +75,23 @@ const tags = getArticleTags();
 		}}
 		slot="head"
 	/>
-	<slot />
+	<body>
+		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 justify-center flex">
+			<article
+				class="prose prose-invert prose-slate
+					prose-headings:italic prose-headings:text-orange-500
+					prose-p:text-orange-50 prose-li:text-orange-50 prose-strong:text-orange-500
+					prose-a:text-orange-500
+					prose-p:font-serif prose-li:font-serif
+					prose-base md:prose-lg lg:prose-2xl">
+				<slot />
+			</article>
+		</div>
+	</body>
 </Base>
+
+<style>
+	body {
+		@apply bg-slate-950;
+	}
+</style>

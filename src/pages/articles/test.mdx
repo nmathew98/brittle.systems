@@ -6,6 +6,9 @@ author: "lipsum.com"
 section: "Test"
 ---
 
+import Image from "../../components/Article/Image.astro";
+
+export const components = { img: Image }; // TODO: Defining `components` not doing anything, but using `<Image />` works
 export const published = new Date("09/12/2023");
 export const modified = new Date("09/12/2023");
 export const tags = ["testing", "testing", "123"];
@@ -21,6 +24,16 @@ Fusce porttitor nulla egestas facilisis dignissim. Nam hendrerit quam at quam ul
 Vestibulum euismod laoreet ante ut tristique. Ut ut mi ut ante scelerisque faucibus. Fusce molestie, ligula nec gravida laoreet, ante ante euismod dolor, dignissim fermentum nulla felis eu ex. Nam vehicula finibus ipsum nec finibus. Nulla ut pulvinar sem. Nam vitae erat aliquet nisi feugiat mollis pharetra sed ligula. Integer eu metus porta, rutrum urna in, laoreet justo. Donec fringilla purus efficitur viverra iaculis.
 
 Etiam posuere, velit sit amet **commodo** porttitor, _orci_ elit ornare risus, ut pretium neque turpis vel massa. Mauris ut felis nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas a neque elementum, venenatis justo ut, dignissim sem. Integer blandit bibendum eros quis consectetur. In porta ipsum lobortis, laoreet est sed, luctus nisl. Aliquam sollicitudin nisl magna, vel efficitur risus eleifend et.
+
+This is a link: [http://google.com](http://google.com)
+
+This is a list:
+
+-   Item 1
+-   Item 2
+-   Item 3
+
+![A single track trail outside of Albuquerque, New Mexico.](https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_1280.png "A single track trail outside of Albuquerque, New Mexico.")
 
 ## Some code
 
