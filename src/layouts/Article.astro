@@ -15,8 +15,7 @@ const { file, frontmatter } = Astro.props;
 const raw = await readFile(file);
 
 // Since we're mocking the runtime to just obtain metadata exports
-// we need to strip out custom components, this also means any custom component
-// used has to be a native element substitute
+// we need to strip out custom components
 const importsStripped = raw
 	.toString()
 	.replaceAll(/import .*|export const components .*/gi, "");
