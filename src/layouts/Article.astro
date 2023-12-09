@@ -90,7 +90,7 @@ const tags = getArticleTags();
 					</h2>
 				</header>
 				<footer>
-					<div class="flex justify-between">
+					<div class="flex justify-between items-center">
 						<div class="flex flex-col">
 							<a
 								rel="author"
@@ -151,7 +151,8 @@ const tags = getArticleTags();
 					<slot />
 				</div>
 				<!-- `< lg`, prose has `max-width` stuff which affects the margins -->
-				<footer class="not-prose lg:hidden mt-16 flex justify-between">
+				<footer
+					class="not-prose lg:hidden mt-16 flex justify-between items-center">
 					<div class="text-sm text-orange-500 flex flex-col">
 						<a
 							rel="author"
