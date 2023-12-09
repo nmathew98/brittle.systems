@@ -4,7 +4,7 @@ import { SEO } from "astro-seo";
 import { evaluate } from "@mdx-js/mdx";
 import { readFile } from "node:fs/promises";
 
-interface Article extends Awaited<ReturnType<typeof evaluate>> {
+export interface Article extends Awaited<ReturnType<typeof evaluate>> {
 	tags?: string[] | string;
 	published?: Date;
 	modified?: Date;
@@ -82,9 +82,9 @@ const tags = getArticleTags();
 				<h1 class="text-2xl font-bold break-words">
 					{frontmatter.title}
 				</h1>
-				<h3 class="text-lg font-normal italic break-words">
+				<h2 class="text-lg font-normal italic break-words">
 					{frontmatter.description}
-				</h3>
+				</h2>
 			</div>
 			<!-- >= lg -->
 			<div
