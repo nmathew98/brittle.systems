@@ -131,7 +131,7 @@ const tags = getArticleTags();
 			<article
 				class="col-span-5 prose prose-invert prose-slate
 					prose-p:font-serif prose-li:font-serif
-					prose-lg md:prose-2xl lg:prose-4xl">
+					prose-base md:prose-2xl lg:prose-4xl">
 				<!-- `< lg`, prose has `max-width` stuff which affects the margins -->
 				<header class="not-prose lg:hidden mb-16 text-orange-50">
 					<h1 class="text-2xl font-bold break-words">
@@ -146,8 +146,8 @@ const tags = getArticleTags();
 				hidden at `lg` -->
 				<div
 					class="col-span-5 prose prose-invert prose-slate
-				prose-p:font-serif prose-li:font-serif
-				prose-base md:prose-lg lg:prose-2xl">
+						prose-p:font-serif prose-li:font-serif
+						prose-base md:prose-2xl lg:prose-4xl">
 					<slot />
 				</div>
 				<!-- `< lg`, prose has `max-width` stuff which affects the margins -->
@@ -165,7 +165,7 @@ const tags = getArticleTags();
 						</time>
 					</div>
 					<!-- Home -->
-					<a href="/" class="mr-2">
+					<a href="/" class="mb-2 mr-2">
 						<div
 							class="transition duration-50 rounded-full
 									outline outline-orange-500 bg-transparent hover:bg-orange-500
