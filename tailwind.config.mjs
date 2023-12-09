@@ -8,6 +8,7 @@ export default {
 			fontFamily: {
 				sans: ["Inter", ...defaultTheme.fontFamily.sans],
 				mono: ["Monaspace", ...defaultTheme.fontFamily.mono],
+				serif: ["EB Garamond", ...defaultTheme.fontFamily.serif],
 			},
 			typography: theme => ({
 				// Reference
