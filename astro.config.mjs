@@ -10,7 +10,7 @@ export default defineConfig({
 	image: {
 		// Cloudflare does not support Astro's built in image optimization
 		// see: https://docs.astro.build/en/guides/images/#configure-no-op-passthrough-service
-		service: passthroughImageService()
+		service: passthroughImageService(),
 	},
 	integrations: [
 		tailwind(),
