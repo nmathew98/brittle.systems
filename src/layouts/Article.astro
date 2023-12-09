@@ -4,13 +4,19 @@ import { SEO } from "astro-seo";
 import { evaluate } from "@mdx-js/mdx";
 import { readFile } from "node:fs/promises";
 
+interface Article extends Awaited<ReturnType<typeof evaluate>> {
+	tags?: string[] | string;
+	published?: Date;
+	modified?: Date;
+}
+
 const { file, frontmatter } = Astro.props;
 
 const raw = await readFile(file);
 const mocked = new Proxy(Object.create(null), {
 	get: () => () => {},
 });
-const article: any = await evaluate(raw, mocked);
+const article: Article = await evaluate(raw, mocked);
 
 const getArticleTags = () => {
 	if (
