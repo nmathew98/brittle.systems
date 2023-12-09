@@ -1,6 +1,18 @@
 ---
-const { alt, title } = Astro.props;
-console.log("Here!!");
+const caption = Astro.props.title || Astro.props.alt;
 ---
 
-<img {...Astro.props} src="" />
+{!caption && <img {...Astro.props} />}
+
+{
+	caption && (
+		<figure>
+			<img {...Astro.props} />
+			{caption && (
+				<figcaption class="text-center">
+					<i>{caption}</i>
+				</figcaption>
+			)}
+		</figure>
+	)
+}
