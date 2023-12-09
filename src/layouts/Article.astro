@@ -1,5 +1,5 @@
 ---
-import Base from './Base.astro';
+import Base from "./Base.astro";
 import { SEO } from "astro-seo";
 
 const { file, frontmatter } = Astro.props;
@@ -8,44 +8,49 @@ const { file, frontmatter } = Astro.props;
 const article = await import(/* @vite-ignore */ file);
 
 const getArticleTags = () => {
-    if (article.tags) {
-        if (Array.isArray(article.tags)) {
-            return article.tags;
-        }
+	if (article.tags) {
+		if (Array.isArray(article.tags)) {
+			return article.tags;
+		}
 
-        return article.tags.split(", ");
-    }
+		return article.tags.split(", ");
+	}
 
-    return frontmatter.tags.split(", ");
-}
+	return frontmatter.tags.split(", ");
+};
 
-const publishedTime = article.published ? article.published.toISOString() : undefined;
-const modifiedTime = article.modified ? article.modified.toISOString() : undefined;
+const publishedTime = article.published
+	? article.published.toISOString()
+	: undefined;
+const modifiedTime = article.modified
+	? article.modified.toISOString()
+	: undefined;
 const tags = getArticleTags();
 ---
 
 <Base>
-    <SEO 
-        title={`${frontmatter.title} | brittle.systems`}
-        description={frontmatter.description}
-        openGraph={{
-            basic: {
-                title: frontmatter.title,
-                type: 'article',
-                // TODO: Same as favicon
-                image: ''
-            },
-            optional: {
-                description: frontmatter.description,
-            },
-            article: {
-                authors: [frontmatter.author],
-                publishedTime: publishedTime,
-                modifiedTime: modifiedTime,
-                section: frontmatter.section,
-                tags: tags
-            }
-        }}
-        slot="head" />
-    <slot />
+	<SEO
+		title={`${frontmatter.title} | brittle.systems`}
+		description={frontmatter.description}
+		openGraph={{
+			basic: {
+				title: frontmatter.title,
+				type: "article",
+				// TODO: Same as favicon
+				image: "",
+			},
+			optional: {
+				description: frontmatter.description,
+			},
+			article: {
+				authors: [frontmatter.author],
+				publishedTime: publishedTime,
+				modifiedTime: modifiedTime,
+				section: frontmatter.section,
+				tags: tags,
+			},
+		}}
+		slot="head"
+	/>
+	<slot />
 </Base>
