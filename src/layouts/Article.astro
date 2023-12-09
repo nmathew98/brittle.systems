@@ -1,14 +1,22 @@
 ---
 import Base from "./Base.astro";
 import { SEO } from "astro-seo";
+import { evaluate } from "@mdx-js/mdx";
+import { readFile } from "node:fs/promises";
 
 const { file, frontmatter } = Astro.props;
 
-// done server side no bundler issues
-const article = await import(/* @vite-ignore */ file);
+const raw = await readFile(file);
+const mocked = new Proxy(Object.create(null), {
+	get: () => () => {},
+});
+const article: any = await evaluate(raw, mocked);
 
 const getArticleTags = () => {
-	if (article.tags) {
+	if (
+		article.tags &&
+		(Array.isArray(article.tags) || typeof article.tags === "string")
+	) {
 		if (Array.isArray(article.tags)) {
 			return article.tags;
 		}
@@ -19,12 +27,14 @@ const getArticleTags = () => {
 	return frontmatter.tags.split(", ");
 };
 
-const publishedTime = article.published
-	? article.published.toISOString()
-	: undefined;
-const modifiedTime = article.modified
-	? article.modified.toISOString()
-	: undefined;
+const publishedTime =
+	article.published instanceof Date
+		? article.published.toISOString()
+		: undefined;
+const modifiedTime =
+	article.modified instanceof Date
+		? article.modified.toISOString()
+		: undefined;
 const tags = getArticleTags();
 ---
 
