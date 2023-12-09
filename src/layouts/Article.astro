@@ -76,34 +76,27 @@ const tags = getArticleTags();
 	/>
 	<body>
 		<div
-			class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 my-8 flex flex-col lg:grid lg:justify-center lg:grid-cols-8">
-			<!-- < lg -->
-			<div class="block lg:hidden mb-16 text-orange-50">
-				<h1 class="text-2xl font-bold break-words">
-					{frontmatter.title}
-				</h1>
-				<h2 class="text-lg font-normal italic break-words">
-					{frontmatter.description}
-				</h2>
-			</div>
+			class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 my-8 flex flex-col items-center lg:items-stretch lg:grid lg:justify-center lg:grid-cols-8">
 			<!-- >= lg -->
 			<div
 				class="hidden lg:flex col-span-3 flex-col space-y-20 max-w-xs justify-between break-words text-sky-900">
-				<div>
+				<header>
 					<h1 class="text-5xl font-bold">
 						{frontmatter.title}
 					</h1>
-					<h3 class="text-base font-normal italic">
+					<h2 class="text-base font-normal italic">
 						{frontmatter.description}
-					</h3>
-				</div>
-				<div class="flex flex-col">
-					<span class="font-medium">
+					</h2>
+				</header>
+				<footer class="flex flex-col">
+					<a rel="author" href={`mailto:${frontmatter.author_email}`}>
 						{frontmatter.author}
-					</span>
-					<span class="font-medium">
+					</a>
+					<time
+						datetime={new Date(modifiedTime).toDateString()}
+						title={new Date(modifiedTime).toDateString()}>
 						{new Date(modifiedTime).toDateString()}
-					</span>
+					</time>
 					{
 						!!tags && (
 							<div class="flex space-x-1 font-light">
@@ -113,26 +106,43 @@ const tags = getArticleTags();
 							</div>
 						)
 					}
-				</div>
+				</footer>
 			</div>
 			<article
 				class="col-span-5 prose prose-invert prose-slate
 					prose-p:font-serif prose-li:font-serif
 					prose-base md:prose-lg lg:prose-2xl">
-				<slot />
-			</article>
-			<!-- < lg -->
-			<div class="block lg:hidden mt-16">
+				<!-- `< lg`, prose has `max-width` stuff which affects the margins -->
+				<header class="not-prose lg:hidden mb-16 text-orange-50">
+					<h1 class="text-2xl font-bold break-words">
+						{frontmatter.title}
+					</h1>
+					<h2 class="text-sm font-normal italic break-words">
+						{frontmatter.description}
+					</h2>
+				</header>
+				<!-- Reapplying prose classes here because prose has last and first
+				child selectors which are affected even though the header above is
+				hidden at `lg` -->
 				<div
-					class="flex flex-col text-orange-50 font-serif text-md break-words">
-					<span>
-						{frontmatter.author}
-					</span>
-					<span>
-						{new Date(modifiedTime).toDateString()}
-					</span>
+					class="col-span-5 prose prose-invert prose-slate
+				prose-p:font-serif prose-li:font-serif
+				prose-base md:prose-lg lg:prose-2xl">
+					<slot />
 				</div>
-			</div>
+				<!-- `< lg`, prose has `max-width` stuff which affects the margins -->
+				<footer
+					class="not-prose lg:hidden mt-16 text-sm text-orange-500 flex flex-col">
+					<a rel="author" href={`mailto:${frontmatter.author_email}`}>
+						{frontmatter.author}
+					</a>
+					<time
+						datetime={new Date(modifiedTime).toDateString()}
+						title={new Date(modifiedTime).toDateString()}>
+						{new Date(modifiedTime).toDateString()}
+					</time>
+				</footer>
+			</article>
 		</div>
 	</body>
 </Base>
