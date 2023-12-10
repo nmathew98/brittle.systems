@@ -5,6 +5,18 @@ export default {
 	content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
 	theme: {
 		extend: {
+			animation: {
+				"ping-logo":
+					"ping-logo 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+			},
+			keyframes: {
+				"ping-logo": {
+					"75%, 100%": {
+						transform: "scale(1.1)",
+						opacity: "0",
+					},
+				},
+			},
 			fontFamily: {
 				sans: ["Inter", ...defaultTheme.fontFamily.sans],
 				mono: ["Monaspace", ...defaultTheme.fontFamily.mono],

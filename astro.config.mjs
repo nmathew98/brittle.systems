@@ -2,6 +2,12 @@ import { defineConfig, passthroughImageService } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
+import rehypePrettyCode from "rehype-pretty-code";
+import react from "@astrojs/react";
+
+const prettyCodeOptions = {
+	theme: "github-dark",
+};
 
 // https://astro.build/config
 export default defineConfig({
@@ -15,17 +21,16 @@ export default defineConfig({
 		tailwind(),
 		mdx({
 			optimize: {
-				customComponentNames: ["img"],
+				customComponentNames: ["img", "a"],
 			},
 		}),
 		sitemap(),
+		react(),
 	],
 	prefetch: true,
 	markdown: {
-		shikiConfig: {
-			theme: "github-dark",
-			wrap: true,
-		},
+		syntaxHighlight: false,
+		rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
 	},
 	output: "static",
 });

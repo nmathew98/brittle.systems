@@ -1,14 +1,16 @@
 ---
 layout: "../../layouts/Article.astro"
-title: "Lorem Ipsum"
+title: "A very informativeweferfwerfwe article"
 description: "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit..."
 author: "lipsum.com"
-section: "Test"
+author_email: "dimwit_begun.0n@icloud.com"
+category: "Test"
 ---
 
 import Image from "../../components/Article/Image.astro";
+import Link from "../../components/Article/Link.astro";
 
-export const components = { img: Image };
+export const components = { img: Image, a: Link };
 export const published = new Date("09/12/2023");
 export const modified = new Date("09/12/2023");
 export const tags = ["testing", "testing", "123"];
@@ -37,7 +39,21 @@ This is a list:
 
 ## Some code
 
-```typescript
+```typescript {4-5}
+type Result = "pass" | "fail";
+
+function verify(result: Result) {
+	if (result === "pass") {
+		console.log("Passed");
+	} else {
+		console.log("Failed");
+	}
+}
+```
+
+## More code
+
+```typescript {4-5}
 type Result = "pass" | "fail";
 
 function verify(result: Result) {
