@@ -28,17 +28,14 @@ export const Search = ({ articles = [] as Article[] }) => {
 		a
 			.toLowerCase()
 			.replace(/\s+/g, "")
-			.includes(query.toLowerCase().replace(/\s+/g, ""));
-	const filtered =
-		query === ""
-			? articles
-			: articles.filter(
-					article =>
-						includes(article.category, query) ||
-						includes(article.title, query) ||
-						includes(article.description, query) ||
-						includes(article.tags, query),
-			  );
+			.includes(b.toLowerCase().replace(/\s+/g, ""));
+	const filtered = articles.filter(
+		article =>
+			includes(article.category, query) ||
+			includes(article.title, query) ||
+			includes(article.description, query) ||
+			includes(article.tags, query),
+	);
 
 	return (
 		<div>
@@ -88,11 +85,12 @@ export const Search = ({ articles = [] as Article[] }) => {
 								<Combobox.Options
 									static
 									className="absolute mt-1 max-h-60 w-full overflow-auto rounded-xs bg-white py-1 focus:outline-none text-base sm:text-sm">
-									{filtered.length === 0 && query !== "" ? (
+									{filtered.length === 0 && !!query && (
 										<div className="relative cursor-default select-none px-4 py-2 text-slate-800 font-medium">
 											No articles found
 										</div>
-									) : (
+									)}
+									{filtered.length > 0 &&
 										filtered.map(person => (
 											<Combobox.Option
 												key={person.url}
@@ -117,8 +115,7 @@ export const Search = ({ articles = [] as Article[] }) => {
 													</>
 												)}
 											</Combobox.Option>
-										))
-									)}
+										))}
 								</Combobox.Options>
 							</Transition>
 							{/* Absolute because otherwise when options open there is a layout shift */}
@@ -138,9 +135,10 @@ export const Search = ({ articles = [] as Article[] }) => {
 													}}
 													className="text-white font-medium focus:italic focus:outline-none">
 													{category}
-													{idx ===
-													recentlyUpdatedCategories.length -
-														1
+													{category ===
+													recentlyUpdatedCategories.at(
+														-1,
+													)
 														? ""
 														: ","}
 												</button>
