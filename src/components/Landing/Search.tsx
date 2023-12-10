@@ -124,27 +124,23 @@ export const Search = ({ articles = [] as Article[] }) => {
 									<span className="text-white font-light">
 										Recently updated categories:
 									</span>
-									{recentlyUpdatedCategories.map(
-										(category, idx) => (
-											<>
-												<button
-													key={category}
-													onClick={() => {
-														setQuery(category);
-														comboboxButtonRef.current?.click();
-													}}
-													className="text-white font-medium focus:italic focus:outline-none">
-													{category}
-													{category ===
-													recentlyUpdatedCategories.at(
-														-1,
-													)
-														? ""
-														: ","}
-												</button>
-											</>
-										),
-									)}
+									{recentlyUpdatedCategories.map(category => (
+										<>
+											<button
+												key={category}
+												onClick={() => {
+													setQuery(category);
+													comboboxButtonRef.current?.click();
+												}}
+												className="text-white font-medium focus:italic focus:outline-none">
+												{category}
+												{category ===
+												recentlyUpdatedCategories.at(-1)
+													? ""
+													: ","}
+											</button>
+										</>
+									))}
 								</div>
 							)}
 						</div>
