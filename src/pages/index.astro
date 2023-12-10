@@ -2,9 +2,24 @@
 import Base from "../layouts/Base.astro";
 import { SEO } from "astro-seo";
 import { Search } from "../components/Landing/Search";
-import { BoltSlashIcon } from "@heroicons/react/24/solid";
+import { BoltSlashIcon } from "@heroicons/react/24/outline";
 
-const mdxArticles = await Astro.glob("../pages/articles/*.mdx");
+const mdxArticles = await Astro.glob<any>("../pages/articles/*.mdx");
+
+const articles = mdxArticles
+	.map((mdx: any) => ({
+		url: mdx.url,
+		category: mdx.frontmatter.category || "",
+		title: mdx.frontmatter.title || "",
+		description: mdx.frontmatter.description || "",
+		tags:
+			mdx.frontmatter.tags ||
+			(Array.isArray(mdx.tags) ? mdx.tags.join(", ") : mdx.tags) ||
+			"",
+		modified: mdx.modified,
+		published: mdx.published,
+	}))
+	.sort((a, b) => Number(b.modified) - Number(a.modified));
 ---
 
 <Base>
@@ -12,7 +27,7 @@ const mdxArticles = await Astro.glob("../pages/articles/*.mdx");
 	<body slot="body">
 		<div
 			class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col items-center space-y-12 justify-center h-screen">
-			<div class="-mt-[10%] p-5 bg-slate-950 bg-opacity-80 rounded-full">
+			<div class="-mt-[10%]">
 				<BoltSlashIcon
 					className="absolute animate-ping-logo text-orange-500 h-28 w-28 md:h-32 md:w-32 lg:h-36 lg:w-36 xl:h-40 xl:w-40"
 				/>
@@ -21,7 +36,7 @@ const mdxArticles = await Astro.glob("../pages/articles/*.mdx");
 				/>
 			</div>
 			<div class="w-full max-w-[80vw] md:max-w-2xl">
-				<Search client:load />
+				<Search articles={articles} client:load />
 			</div>
 		</div>
 	</body>

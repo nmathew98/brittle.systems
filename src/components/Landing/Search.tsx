@@ -1,101 +1,165 @@
-import { Fragment, useState } from "react";
+import React from "react";
 import { Combobox, Transition } from "@headlessui/react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 
-const people = [
-	{ id: 1, name: "Wade Cooper" },
-	{ id: 2, name: "Arlene Mccoy" },
-	{ id: 3, name: "Devon Webb" },
-	{ id: 4, name: "Tom Cook" },
-	{ id: 5, name: "Tanya Fox" },
-	{ id: 6, name: "Hellen Schmidt" },
-];
+export interface Article {
+	url: string;
+	category: string;
+	title: string;
+	description: string;
+	tags: string;
+	published: Date;
+	modified: Date;
+}
 
-export const Search = () => {
-	const [selected, setSelected] = useState(people[0]);
-	const [query, setQuery] = useState("");
+export const Search = ({ articles = [] as Article[] }) => {
+	const inputRef = React.useRef<HTMLInputElement | null>(null);
+	const [selected, setSelected] = React.useState<Article | null>(null);
+	const [query, setQuery] = React.useState("");
 
-	const filteredPeople =
+	const recentlyUpdatedCategories = [
+		...new Set(
+			articles
+				.sort((a, b) => Number(b.modified) - Number(a.modified))
+				.map(article => article.category),
+		),
+	].slice(0, 5);
+
+	const includes = (a: string, b: string) =>
+		a
+			.toLowerCase()
+			.replace(/\s+/g, "")
+			.includes(query.toLowerCase().replace(/\s+/g, ""));
+	const filtered =
 		query === ""
-			? people
-			: people.filter(person =>
-					person.name
-						.toLowerCase()
-						.replace(/\s+/g, "")
-						.includes(query.toLowerCase().replace(/\s+/g, "")),
+			? articles
+			: articles.filter(
+					article =>
+						includes(article.category, query) ||
+						includes(article.title, query) ||
+						includes(article.description, query) ||
+						includes(article.tags, query),
 			  );
 
+	React.useEffect(() => {
+		if (selected) {
+			location.pathname = selected.url;
+		}
+	}, [selected]);
+
+	// TODO: When clicking on a category, the options show but directly clicking on option
+	// causes it to just dismiss, you have to interact with the input for clicking on an
+	// option to work
 	return (
 		<div>
-			<Combobox value={selected} onChange={setSelected}>
-				<div className="relative mt-1">
-					<div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
-						<Combobox.Input
-							className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
-							displayValue={person => (person as any).name}
-							onChange={event => setQuery(event.target.value)}
-						/>
-						<Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
-							<ChevronUpDownIcon
-								className="h-5 w-5 text-gray-400"
-								aria-hidden="true"
-							/>
-						</Combobox.Button>
-					</div>
-					<Transition
-						as={Fragment}
-						leave="transition ease-in duration-100"
-						leaveFrom="opacity-100"
-						leaveTo="opacity-0"
-						afterLeave={() => setQuery("")}>
-						<Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
-							{filteredPeople.length === 0 && query !== "" ? (
-								<div className="relative cursor-default select-none px-4 py-2 text-gray-700">
-									Nothing found.
-								</div>
-							) : (
-								filteredPeople.map(person => (
-									<Combobox.Option
-										key={person.id}
-										className={({ active }) =>
-											`relative cursor-default select-none py-2 pl-10 pr-4 ${
-												active
-													? "bg-teal-600 text-white"
-													: "text-gray-900"
-											}`
-										}
-										value={person}>
-										{({ selected, active }) => (
-											<>
-												<span
-													className={`block truncate ${
-														selected
-															? "font-medium"
-															: "font-normal"
-													}`}>
-													{person.name}
-												</span>
-												{selected ? (
-													<span
-														className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
+			<Combobox value={selected} onChange={setSelected} nullable>
+				{({ open }) => (
+					<>
+						<div className="relative mt-1">
+							<div className="relative w-full cursor-default overflow-hidden bg-white text-left shadow-lg focus:outline-none sm:text-sm">
+								<Combobox.Input
+									autoFocus
+									ref={inputRef}
+									className="w-full border-none py-4 pl-3 pr-10 text-lg bg-sky-950 transition focus-visible:bg-transparent focus:outline-none text-white placeholder-slate-100 focus-visible:placeholder-slate-800 focus-visible:text-slate-800 font-semibold"
+									displayValue={article =>
+										(article as Article)?.title
+									}
+									placeholder="Search articles ..."
+									value={query}
+									onBlur={() => setQuery("")}
+									onKeyDown={event => {
+										if (event.key === "Escape")
+											setQuery("");
+									}}
+									onChange={event =>
+										setQuery(event.target.value)
+									}
+								/>
+								<Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
+									<ChevronUpDownIcon
+										className="h-5 w-5 text-slate-400"
+										aria-hidden="true"
+									/>
+								</Combobox.Button>
+							</div>
+							<Transition
+								as="div"
+								leave="transition ease-in"
+								leaveFrom="opacity-100"
+								leaveTo="opacity-0"
+								show={Boolean(query) || open}
+								afterLeave={() => setQuery("")}>
+								{(query || open) && (
+									<Combobox.Options
+										static
+										className="absolute mt-1 max-h-60 w-full overflow-auto rounded-xs bg-white py-1 focus:outline-none text-base sm:text-sm">
+										{filtered.length === 0 &&
+										query !== "" ? (
+											<div className="relative cursor-default select-none px-4 py-2 text-slate-800 font-medium">
+												No articles found
+											</div>
+										) : (
+											filtered.map(person => (
+												<Combobox.Option
+													key={person.url}
+													className={({ active }) =>
+														`relative select-none px-4 py-2 ${
 															active
-																? "text-white"
-																: "text-teal-600"
-														}`}>
-														<CheckIcon
-															className="h-5 w-5"
-															aria-hidden="true"
-														/>
-													</span>
-												) : null}
-											</>
+																? "bg-sky-950 text-white"
+																: "text-slate-800"
+														}`
+													}
+													value={person}>
+													{({ selected }) => (
+														<>
+															<span
+																className={`block truncate ${
+																	selected
+																		? "font-semibold"
+																		: "font-normal"
+																}`}>
+																{person.title}
+															</span>
+														</>
+													)}
+												</Combobox.Option>
+											))
 										)}
-									</Combobox.Option>
-								))
+									</Combobox.Options>
+								)}
+							</Transition>
+							{/* Absolute because otherwise when options open there is a layout shift */}
+							{!(query || open) && (
+								<div className="mt-2 absolute w-full flex space-x-2 overflow-hidden">
+									<span className="text-white font-light">
+										Recently updated categories:
+									</span>
+									{recentlyUpdatedCategories.map(
+										(category, idx) => (
+											<>
+												<button
+													key={category}
+													onClick={() => {
+														setQuery(category);
+														inputRef.current?.click();
+														inputRef.current?.focus();
+													}}
+													className="text-white font-medium focus:italic focus:outline-none">
+													{category}
+													{idx ===
+													recentlyUpdatedCategories.length -
+														1
+														? ""
+														: ","}
+												</button>
+											</>
+										),
+									)}
+								</div>
 							)}
-						</Combobox.Options>
-					</Transition>
-				</div>
+						</div>
+					</>
+				)}
 			</Combobox>
 		</div>
 	);
