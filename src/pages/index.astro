@@ -1,60 +1,50 @@
 ---
 import Base from "../layouts/Base.astro";
+import { SEO } from "astro-seo";
+import { Search } from "../components/Landing/Search";
+import { BoltSlashIcon } from "@heroicons/react/24/outline";
 
-const sortArticlesByPublishedAscending = (x, y) => x.published - y.published;
-const getArticleInformation = (articles: any[]) =>
-	articles.sort(sortArticlesByPublishedAscending).map(article => ({
-		frontmatter: article.frontmatter,
-		headings: article.getHeadings(),
-		url: article.url,
-		published: article.published,
-		modified: article.modified,
-		tags: article.tags,
-	}));
+const mdxArticles = await Astro.glob<any>("../pages/articles/*.mdx");
 
-const articles: any[] = getArticleInformation(
-	await Astro.glob("../pages/articles/*.mdx"),
-);
+const articles = mdxArticles
+	.map((mdx: any) => ({
+		url: mdx.url,
+		category: mdx.frontmatter.category || "",
+		title: mdx.frontmatter.title || "",
+		description: mdx.frontmatter.description || "",
+		tags:
+			mdx.frontmatter.tags ||
+			(Array.isArray(mdx.tags) ? mdx.tags.join(", ") : mdx.tags) ||
+			"",
+		modified: mdx.modified,
+		published: mdx.published,
+	}))
+	.sort((a, b) => Number(b.modified) - Number(a.modified));
 ---
 
 <Base>
-	<body>
+	<SEO title="brittle.systems" description="" slot="head" />
+	<body slot="body">
 		<div
-			class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 my-8
-			prose prose-slate prose-invert prose-base md:prose-lg lg:prose-2xl
-			grid justify-center">
-			<div>
-				<h1 class="text-center"><em>under construction</em><br />🚧</h1>
+			class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col items-center space-y-12 justify-center h-screen">
+			<div class="-mt-[10%]">
+				<BoltSlashIcon
+					className="absolute animate-ping-logo text-orange-500 h-28 w-28 md:h-32 md:w-32 lg:h-36 lg:w-36 xl:h-40 xl:w-40"
+				/>
+				<BoltSlashIcon
+					className="text-orange-500 h-28 w-28 md:h-32 md:w-32 lg:h-36 lg:w-36 xl:h-40 xl:w-40"
+				/>
 			</div>
-			<ul class="max-w-fit px-10 py-5 rounded-3xl list-none">
-				{
-					articles.map(article => (
-						<li>
-							<a href={article.url}>
-								{article.frontmatter.title}
-							</a>
-							<ol class="grid grid-cols-2">
-								{article.headings
-									.filter(heading => heading.depth === 2)
-									.map(heading => (
-										<li>
-											<a
-												href={`${article.url}/#${heading.slug}`}>
-												{heading.text}
-											</a>
-										</li>
-									))}
-							</ol>
-						</li>
-					))
-				}
-			</ul>
+			<div class="w-full max-w-[80vw] md:max-w-2xl">
+				<Search articles={articles} client:load />
+			</div>
 		</div>
 	</body>
 </Base>
 
 <style scoped>
 	body {
-		@apply bg-slate-950;
+		background-image: url("/backgrounds/landing.svg");
+		background-size: cover;
 	}
 </style>

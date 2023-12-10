@@ -60,7 +60,7 @@ const tags = getArticleTags();
 				title: frontmatter.title,
 				type: "article",
 				// TODO: Same as favicon
-				image: "",
+				image: "/favicon.svg",
 			},
 			optional: {
 				description: frontmatter.description,
@@ -69,7 +69,7 @@ const tags = getArticleTags();
 				authors: [frontmatter.author],
 				publishedTime: publishedTime,
 				modifiedTime: modifiedTime,
-				section: frontmatter.section,
+				section: frontmatter.category,
 				tags: tags,
 			},
 		}}
@@ -194,13 +194,10 @@ const tags = getArticleTags();
 		if (event.key === "Backspace" || event.key === "Escape")
 			location.pathname = "/";
 	});
-</script>
 
-<style scoped>
-	body {
-		@apply bg-slate-950;
-	}
-</style>
+	// Scoped styles seem to not be working when applied to `body`
+	document.body.classList.add("bg-slate-950");
+</script>
 
 <style is:global>
 	code {
