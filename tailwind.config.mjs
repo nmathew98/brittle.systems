@@ -12,7 +12,7 @@ export default {
 			keyframes: {
 				"ping-logo": {
 					"75%, 100%": {
-						transform: "scale(1.1)",
+						transform: "scale(1.15)",
 						opacity: "0",
 					},
 				},
