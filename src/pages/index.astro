@@ -6,20 +6,18 @@ import { BoltSlashIcon } from "@heroicons/react/24/outline";
 
 const mdxArticles = await Astro.glob<any>("../pages/articles/*.mdx");
 
-const articles = mdxArticles
-	.map((mdx: any) => ({
-		url: mdx.url,
-		category: mdx.frontmatter.category || "",
-		title: mdx.frontmatter.title || "",
-		description: mdx.frontmatter.description || "",
-		tags:
-			mdx.frontmatter.tags ||
-			(Array.isArray(mdx.tags) ? mdx.tags.join(", ") : mdx.tags) ||
-			"",
-		modified: mdx.modified,
-		published: mdx.published,
-	}))
-	.sort((a, b) => Number(b.modified) - Number(a.modified));
+const articles = mdxArticles.map((mdx: any) => ({
+	url: mdx.url,
+	category: mdx.frontmatter.category || "",
+	title: mdx.frontmatter.title || "",
+	description: mdx.frontmatter.description || "",
+	tags:
+		mdx.frontmatter.tags ||
+		(Array.isArray(mdx.tags) ? mdx.tags.join(", ") : mdx.tags) ||
+		"",
+	modified: mdx.modified,
+	published: mdx.published,
+}));
 ---
 
 <Base>
