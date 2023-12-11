@@ -90,7 +90,7 @@ export const Search = ({ articles = [] as Article[] }) => {
 										<Combobox.Option
 											key={article.url}
 											className={({ active }) =>
-												`relative select-none px-4 py-5 ${
+												`relative select-none px-4 py-4 ${
 													active
 														? "bg-orange-600 text-white"
 														: "text-slate-800"
@@ -109,6 +109,10 @@ export const Search = ({ articles = [] as Article[] }) => {
 																: "font-normal"
 														}`}>
 														{article.title}
+														<br />
+														<span className="text-sm sm:text-xs">
+															{article.modified.toDateString()}
+														</span>
 													</span>
 												</>
 											)}
