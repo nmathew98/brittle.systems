@@ -15,7 +15,7 @@ export interface Article {
 export const Search = ({ articles = [] as Article[] }) => {
 	const comboboxButtonRef = React.useRef<HTMLButtonElement | null>(null);
 	const [query, setQuery] = React.useState("");
-	const lastKeyDown = React.useRef<string | null>("");
+	const lastKeyDown = React.useRef<string | null>(null);
 
 	const articlesModifiedDesc = articles.sort(
 		(a, b) => Number(b.modified) - Number(a.modified),
