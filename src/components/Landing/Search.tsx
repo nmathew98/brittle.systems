@@ -23,7 +23,7 @@ export const Search = ({ articles = [] as Article[] }) => {
 
 	const recentlyUpdatedCategories = [
 		...new Set(
-			articles
+			articlesModifiedDesc
 				.sort((a, b) => Number(b.modified) - Number(a.modified))
 				.map(article => article.category),
 		),
