@@ -242,7 +242,7 @@ const tags = getArticleTags();
 	const initialScroll = async () => {
 		const response = await fetch("/api/scroll");
 
-		const scroll = await response.json();
+		const scroll: Record<string, number> = await response.json();
 
 		const percentageScrolled =
 			scroll.top / (document.body.offsetHeight - window.innerHeight);
