@@ -218,3 +218,44 @@ const tags = getArticleTags();
 		background-color: rgba(255, 255, 255, 0.05);
 	}
 </style>
+
+<script lang="ts">
+	fetch("/api/id", { credentials: "same-origin" });
+</script>
+
+<script>
+	import { debounce } from "perfect-debounce";
+
+	const onScroll = debounce(() => {
+		fetch("/api/scroll", {
+			method: "PUT",
+			headers: new Headers({
+				"Content-Type": "application/json",
+			}),
+			credentials: "same-origin",
+			body: JSON.stringify({ left: window.scrollX, top: window.scrollY }),
+		});
+	}, 250);
+
+	document.addEventListener("scroll", onScroll);
+
+	const initialScroll = async () => {
+		const response = await fetch("/api/scroll");
+
+		const scroll = await response.json();
+
+		const percentageScrolled =
+			scroll.top / (document.body.offsetHeight - window.innerHeight);
+
+		if (percentageScrolled >= 0.8) return;
+
+		const scrollToOptions: ScrollToOptions = {
+			...scroll,
+			behavior: "smooth",
+		};
+
+		window.scrollTo(scrollToOptions);
+	};
+
+	initialScroll();
+</script>

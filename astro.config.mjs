@@ -32,5 +32,5 @@ export default defineConfig({
 		syntaxHighlight: false,
 		rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
 	},
-	output: "static",
+	output: "hybrid",
 });
