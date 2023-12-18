@@ -13,7 +13,20 @@ const prettyCodeOptions = {
 // https://astro.build/config
 export default defineConfig({
 	site: "https://brittle.systems",
-	adapter: cloudflare(),
+	adapter: cloudflare({
+		mode: "directory",
+		functionPerRoute: true,
+		imageService: "cloudflare",
+		runtime: {
+			mode: "local",
+			type: "pages",
+			bindings: {
+				KV: {
+					type: "kv",
+				},
+			},
+		},
+	}),
 	image: {
 		// Cloudflare does not support Astro's built in image optimization
 		// see: https://docs.astro.build/en/guides/images/#configure-no-op-passthrough-service
