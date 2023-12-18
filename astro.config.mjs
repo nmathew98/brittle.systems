@@ -15,6 +15,9 @@ export default defineConfig({
 	site: "https://brittle.systems",
 	adapter: cloudflare({
 		mode: "directory",
+		routes: {
+			include: ["/_image", "/api/id", "/api/scroll"],
+		},
 		functionPerRoute: true,
 		imageService: "cloudflare",
 		runtime: {
