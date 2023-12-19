@@ -1,11 +1,9 @@
 ---
 import Base from "./Base.astro";
 import { SEO } from "astro-seo";
-import { evaluate } from "@mdx-js/mdx";
-import { readFile } from "node:fs/promises";
 import { HomeModernIcon } from "@heroicons/react/24/solid";
 
-export interface Article extends Awaited<ReturnType<typeof evaluate>> {
+export interface Article extends Record<string, any> {
 	tags?: string[] | string;
 	published?: Date;
 	modified?: Date;
@@ -13,41 +11,19 @@ export interface Article extends Awaited<ReturnType<typeof evaluate>> {
 
 const { file, frontmatter } = Astro.props;
 
-const raw = await readFile(file);
-
-// Since we're mocking the runtime to just obtain metadata exports
-// we need to strip out custom components
-const importsStripped = raw
-	.toString()
-	.replaceAll(/import .*|export const components .*/gi, "");
-const mocked = new Proxy(Object.create(null), {
-	get: () => () => {},
-});
-const article: Article = await evaluate(importsStripped, mocked);
+const ARTICLES = await Astro.glob("../pages/**/*.mdx");
+const article: Article = ARTICLES.find(article => article.file === file);
 
 const getArticleTags = () => {
-	if (
-		article.tags &&
-		(Array.isArray(article.tags) || typeof article.tags === "string")
-	) {
-		if (Array.isArray(article.tags)) {
-			return article.tags;
-		}
+	if (Array.isArray(article.tags)) return article.tags;
 
-		return article.tags.split(", ");
-	}
+	const tags = article.tags || frontmatter.tags;
 
-	return frontmatter.tags.split(", ");
+	return tags.split(", ");
 };
 
-const publishedTime =
-	article.published instanceof Date
-		? article.published.toISOString()
-		: undefined;
-const modifiedTime =
-	article.modified instanceof Date
-		? article.modified.toISOString()
-		: undefined;
+const publishedTime = article.published.toISOString();
+const modifiedTime = article.modified.toISOString();
 const tags = getArticleTags();
 ---
 
@@ -90,6 +66,9 @@ const tags = getArticleTags();
 						lang="en">
 						{frontmatter.description}
 					</h2>
+					<h3
+						class="estimated-time-to-read text-base font-normal mt-2">
+					</h3>
 				</header>
 				<footer class="text-lg">
 					<div class="flex justify-between items-center">
@@ -144,11 +123,15 @@ const tags = getArticleTags();
 						class="text-base mt-4 md:text-xl font-normal italic break-words hyphens-auto">
 						{frontmatter.description}
 					</h2>
+					<h3
+						class="estimated-time-to-read opacity-0 text-sm mt-2 md:text-lg font-normal">
+					</h3>
 				</header>
 				<!-- Reapplying prose classes here because prose has last and first
 				child selectors which are affected even though the header above is
 				hidden at `lg` -->
 				<div
+					id="content"
 					class="col-span-5 prose prose-invert prose-slate
 						prose-p:font-serif prose-li:font-serif
 						prose-base md:prose-2xl lg:prose-7xl">
@@ -188,6 +171,24 @@ const tags = getArticleTags();
 		</div>
 	</body>
 </Base>
+
+<script lang="ts">
+	const AVERAGE_WORDS_PER_MINUTE = 238;
+	const { innerText: content } = document.getElementById("content");
+
+	const numberOfWords = content.match(/\S+/g).length;
+	const estimatedReadingTime = Math.floor(
+		numberOfWords / AVERAGE_WORDS_PER_MINUTE,
+	);
+
+	const indicators = [
+		...document.getElementsByClassName("estimated-time-to-read"),
+	];
+	indicators.forEach(indicator => {
+		indicator.innerText = `Estimated time: ${estimatedReadingTime} minutes`;
+		indicator.classList.remove("opacity-0");
+	});
+</script>
 
 <script lang="ts">
 	document.addEventListener("keydown", event => {
