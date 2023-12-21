@@ -1,0 +1,279 @@
+---
+layout: "../../layouts/Article.astro"
+title: "The intricacies of making something out of nothing"
+description: "A look into the motivation for and the mechanics behind React through an animation library"
+author: "Naveen Mathew"
+author_email: "dimwit_begun.0n@icloud.com"
+category: "Frontend Development"
+---
+
+import Image from "../../components/Article/Image.astro";
+import Link from "../../components/Article/Link.astro";
+
+export const components = { img: Image, a: Link };
+export const published = new Date("12/22/2023");
+export const modified = new Date("12/22/2023");
+export const tags = ["react", "javascript", "typescript", "animation"];
+
+> If you don't think managing state is tricky, consider the fact that 80% of all problems in all complex systems are fixed by rebooting.
+>
+> <cite>Stuart Halloway</cite>
+
+## Why React?
+
+React was borne out of a need: a need to enable a simpler model of data flow in user interfaces -- in React data only flows in one direction, from the roots to the leaves.
+
+The mechanism React utilizes to enable a simpler model of data flow is known as reactivity (or the _Observer_ pattern): we designate some variables as state, when state updates everything that depends on it is re-evaluated.
+
+Why is the model of data flow that React enables more applicable in the context of user interfaces compared to APIs? In short: it's just the way things are, when we build user interfaces most of the job is specifying which parts of the interfaces need to update when an action occurs, when an action occurs its effects spill over into other parts of the interface. When we build APIs most of the job is processing the data that flows in, validating it and persisting it, the important distinction being that effects of these actions do not spill over into other parts of the API most of the time.
+
+Not to say that reactivity does not come up in the context of APIs, it does: in the form of publish/subscribe systems utilized mainly in event driven architectures using tools like RabbitMQ and Apache Kafka; the _Observer_ pattern at scale.
+
+## In a state
+
+The central idea in React is **state**, state has dependencies (dependents really) and whenever state changes, its dependencies need to be recalculated. The dependencies of state would be the **render function** (in functional React -- the dominant paradigm these days, it is the function component itself and in object-oriented React it is the `render` method of the class).
+
+Each time state changes and its dependencies are recalculated, the render function is invoked again, which gives rise to:
+
+-   The need for `useEffect`: sometimes we have functions we don't want executing each time dependencies are recalculated (an API call for example), these functions are called side-effects because each time they execute they produce -- side effects
+    -   When dependencies are recalculated, the render function executes again and `useEffect` is invoked again, when this happens, React checks the value of each item (memory cells) in the dependency array and if any of these values have changed, the effect is ran again
+-   The need for `useRef`: sometimes we want to update a variable but we don't want dependencies to recalculate like with using state. A normal variable with `let` would work except its value is reset each time dependencies are recalculated which could cause incorrect data to be presented:
+
+    -   So, we move it out of the render function with `useRef` (there's more to it)
+    -   In principle it works kind of like this:
+
+    ```typescript
+    let x = 0;
+
+    const addOne = () => {
+        x = x + 1;
+
+        return x;
+    };
+
+    addOne(); // x = 1
+    addOne(); // x = 2
+    addOne(); // x = 3
+    ```
+
+    Notice that the value of `x` does not get reset each time `addOne` is called as in this case:
+
+    ```typescript
+    const addOne = () => {
+        let x = 0;
+
+        x = x + 1;
+
+        return x;
+    };
+
+    addOne(); // x = 1
+    addOne(); // x = 1
+    addOne(); // x = 1
+    ```
+
+## Functions and components
+
+A (function) component is just a normal everyday function, much like `(x: number, y: number) => number`, but, components always take in an object as its input and produce `React.ReactNode` as its output.
+
+What is `React.ReactNode`? It is just the representation of a DOM node in JavaScript and it is composed of many parts; the React tree is just one big tree made up of many `React.ReactNode`'s which capture the HTML (a facade of it) expressed.
+
+Of the many parts of `React.ReactNode`, the one that is essential and could use a little more elaboration on is `React.ReactElement`:
+if a component uses other components which render a HTML element (including everyday HTML elements such as `h1` or `p` -- the component form of these elements come shipped with React) then the output is `React.ReactElement`, its counterpart in the DOM is a HTML element.
+
+`React.ReactElement` is also a tree (who knew?) and at its leaves lie details of the native HTML elements to be displayed on-screen.
+
+## Unequally equal
+
+When it comes to languages, there are two forms of equality: value equality and reference equality. Most languages agree on how to compare primitive values -- numbers, strings, symbols -- but, when it comes to values which are composed of other values, reference types -- arrays and objects -- we run into an issue.
+
+Given the arrays `a = [1, 2, 3, 4, 5]` and `b = [1, 2, 3, 4, 5]`.
+
+Is `a == b`?
+
+In spoken language, we would agree, it is equal -- why? We say it is equal because both `a` and `b` are made of the same primitive values so they are equal, it makes no sense to define equality in any other terms for spoken language.
+
+When it comes to programming languages however, what happens when we do `a = [1, 2, 3, 4]` and `b = [1, 2, 3, 4]`?
+
+We are instantiating two instances of arrays and this is where things become unclear, arrays point to a location in memory and we could use that pointer to define equality, or, we could define equality based on a hash computed from values in the array.
+
+In JavaScript, the form of equality used is reference equality, if two pointers point to the same location in memory then they are equal.
+
+## Reticulating splines
+
+Now, we know that whenever state changes its dependencies are recalculated and to determine if state has changed we need to compare the previous (current) state and the next state. We also know that React components accept an object as its input, so, what happens when state changes and its dependencies recalculated because inputs have changed but, the render function is made of many calls to other React components:
+
+```tsx
+const Body = ({ count = 1000000 }) => (
+    if (count === 1) {
+        return <div />;
+    }
+
+    return (
+        <div>
+            <Body count={count - 1}>
+        </div>
+    );
+);
+```
+
+In this case, recomputing the render function is an expensive operation (_reference equality!_), this gives rise to:
+
+-   The need for `React.memo`: if the input to the render function does not change based on a custom comparison function, then with `React.memo`, its output does not change either. As the name suggests it _memoizes_ or _caches_ the result of an evaluation
+
+Similarly, sometimes we have variables which are the result of some combination of state: `const a = expensiveComputation(b, c)` where `b` and `c` are state.
+
+Whenever dependencies are recomputed because of a state change, `expensiveComputation` is invoked again. If the render function is dependent on more states than just `b` and `c`, then if any of those other states change, `a` will be re-evaluated with `expensiveComputation` being invoked each time, but `a` just depends on `b` and `c`, it does not need to be recomputed for each and every state change -- this gives rise to:
+
+-   The need for `useMemo`: sometimes an expression only needs to be re-evaluated for some particular state change not every state change and `useMemo` allows us to do that
+
+## Effective change management
+
+Circling back to the main hooks in React which provide an escape latch from recomputation each time state changes, `useEffect` and `useMemo`:
+
+```tsx
+const Counter = () => {
+    const [_, setCount] = useState(0);
+
+    useEffect(() => {
+        setCount(count => count + 1);
+    });
+
+    return "Hello world";
+};
+```
+
+On initial render, the text 'Hello world' is displayed on-screen then the effect is ran. The effect does not specify a dependency array, which means each time state changes it is ran again since it is not dependent on any particular state, so the effect is dependent on all states.
+
+However, the effect itself triggers a state update which means:
+
+1. The component is invoked
+2. The effect is invoked (since it has no dependencies)
+3. The effect causes state to update
+4. The component is invoked
+5. The effect is invoked (since it has no dependencies)
+
+and this repeats infinitely.
+
+The use case for specifying `useEffect` or `useMemo` without a dependency array? When we want these computations to always run after something is displayed on-screen, a use case that does not come up often.
+
+## Tribal knowledge
+
+The inputs to the render function are known as _props_ -- the render function takes an object as its input and it is the properties of this object which are the parameters of the render function. Props are not reactive but they look reactive because props (can only) change (_referential equality!_) if state changes.
+
+When the render function is evaluated (known as a _render_), it produces a node -- a `React.ReactNode`, the representation of a DOM node in JavaScript -- a node in a tree can be a sub-tree or a leaf, when the node is a tree it has _children_ and so, the render function has a special prop called `children` (which is also a `React.ReactNode`). The `children` at the bottom of the React tree, the leaves, end up being what is displayed on-screen.
+
+What happens if the state (not depended upon by the parent) in a child node changes? Does the parent re-render? Well, we know that when state changes, its dependencies are recalculated and in this case only the child depends upon the state not the parent, so, the parent does not re-render.
+
+## Just a touch
+
+A well designed user interface invites its users to prod around the environment they're presented with, subtle indicators provide feedback to users that they're taking the right turns, styles such as shadows upon hovering over an element give a flat surface a sense of depth.
+
+Often times the morphism of an element from one state to another needs to be smoothened, transitions and animations allow us to do this and the only tools we have under our belt are: JavaScript and CSS.
+
+When it comes to the React side of things, there are many packages available for designing animations and transitions:
+
+-   [Framer Motion](https://www.framer.com/motion/): One of the most popular libraries for complex animations and transitions
+-   [Motion One](https://motion.dev/): The subject of this article, a simpler library wrapping around the [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API). For React, there are no components available for use, only vanilla JavaScript
+
+Now may be a good time for a pointer to the [implementation](https://github.com/nmathew98/s.o.o.n).
+
+## Present!
+
+When it comes to function components, we have two hooks available to our disposal to observe a component's lifecycle: `useLayoutEffect` and `useEffect`. `useLayoutEffect` executes before the DOM is reflected on-screen while `useEffect` executes after the DOM is reflected on-screen. The DOM is reflected on-screen when users are able to interact with the components.
+
+Out of the box, React allows us observe an element entering, hovering and clicking but it does not allow us to observe an element exiting which requires for a component (`Presence`) which traps exiting and entering `children`, allowing us to perform some effect on each child and once the effect is complete, either remove/add the child from/to the DOM.
+
+The easiest way to implement `Presence` is to base it off how FramerMotion implemented [theirs](https://github.com/framer/motion/blob/main/packages/framer-motion/src/components/AnimatePresence/index.tsx), it's what [Svelte](https://svelte-motion.gradientdescent.de/API/presence/) did and what we will do.
+
+`Presence` has two behaviors:
+
+-   `exitBeforeEnter`: enter new children only once exiting children are done
+-   `exitWhileEnter` = `!exitBeforeEnter`: enter new children and exit old children at the same time
+
+Before moving forward, the structure of the component tree is:
+
+```tsx
+<Parent>
+    <Presence>
+        <Motion />
+        <Motion />
+    </Presence>
+</Parent>
+```
+
+The structure of the tree means that for any `Presence` child to be exited/entered, state in `Parent` must be updated which will trigger a re-render of both `Presence` and its children, so the `children` prop values will change between renders if a child is entered/exited.
+
+To determine which children are exiting/entering, we need a few things:
+
+-   `forcedRenders`: state allowing us to force a render (and keep track of the number of rerenders for debugging) when the last exiting child is done to remove exited child elements from the DOM
+-   `isInitialRender`: a `Ref` which is `true` for the initial render and `false` for all subsequent renders
+-   `exitingChildrenLookup`: a `Ref` which is initialized to an empty `Map` to know when the last child is done with exit animations to force a re-render and remove exiting children from the DOM
+-   `currentChildren`: a `Ref` of an array of child elements which are currently displayed, it is always one render behind the `children` prop
+
+On the initial render of `Presence`, there are no child elements which are exiting or entering, so all we have to do is render the `children` and update `isInitialRender` to `true`.
+
+On subsequent renders, if there are child elements entering/exiting:
+
+1. We need to diff the `children` prop value and `currentChildren` to determine `exitingChildren`, we can do this by requiring that each child has a `key` specified, if a `key` exists in `currentChildren` but not `children` then the child is exiting and vice-versa. We need to add the exiting children to `exitingChildrenLookup` by `key` to keep track of which children are done exiting
+2. For each exiting child, we attach the `animateExit` to the `ref` prop of the child. The `ref` props accepts a function and the parameters for this function is a reference to the HTML element, allowing us to perform exit animations on the child. Once a child is done exiting, we remove its entry from `exitingChildrenLookup` and once all children are done, we trigger a re-render by updating the state `forcedRenders`
+
+Now, `Presence` has two behaviors, `exitBeforeEnter` and `exitWhileEnter`, and we need to handle both these cases separately:
+
+-   `exitWhileEnter`: we need to exit old and enter new child elements simultaneously, so, we take the `children` prop value and merge it with the values of `exitingChildrenLookup`
+    -   To determine where to place exiting children in `children`, remember that falsy values are not rendered by React: in place of all exiting children in `children` will be `false`, each exiting child needs to take its place first-in, first-out
+-   `exitBeforeEnter`: we need to exit old child elements and then enter new child elements, all we have to do is attach `animateExit` to each child and once the last child is done animating out (and the `exitingChildrenLookup` is empty), we render `children` by forcing a re-render
+
+It's not obvious but each time a component re-renders, there is a version of state attached to that render (remember that there was more to things in `useRef`? this is it, except that for refs there is a version attached to the initial component invocation), so, if we pluck out a child from a previous render and place it in the next render, if the child references state in the parent (not `Presence`, the component which uses `Presence`) then the child will see old values and any state displayed will be outdated. Similarly, if a child is removed from the DOM, it loses all of its state so that if it is rendered again, it renders as new.
+
+## Cause and effect
+
+We now have a way to trap entering and exiting children and trigger some animation/transition on them. We now need a component -- `Motion` -- to apply animations on HTML elements -- lucky for us, Motion One has done the heavy lifting here and all we need to do is largely compute the keyframes from one render to the other.
+
+With applying enter animations, all we need to do is attach a `ref` prop to the component (the counterparts for native HTML elements) we want to animate and let `animate from "motion"` do it's job, the same goes for hover and click animations, we need to have keep a `Ref` to the HTML element and apply animations `onMouseOver`, `onMouseLeave`, `onMouseUp` and `onMouseDown`. The reason for not using `onClick` is that it is one way -- it allows us to move to the clicked keyframe but once the click is done we cannot go back.
+
+Exit animations however are a little more complicated since HTML elements do not have an exit event. The simplest way to go about it is to expose an [imperative handle](https://react.dev/reference/react/useImperativeHandle) which allows us to expose custom event listeners (`onMouseOver`, etc) on the element. Exposing a handle is not enough, we also need to know when exit animations are done, and for this we can rely on `AnimationControls.finished` from the result of calling `animate` which is a `Promise` that resolves when the animation is complete.
+
+The `Motion` component only supports the counterparts for native HTML elements because those are the only components which are guaranteed to accept a `ref` prop and often times there the section to animate is nested within a `div`.
+
+## Shifty components
+
+The API for the React implementation is based (loosely) on [Motion One for Solid](https://motion.dev/solid/quick-start), the `Motion` component in the latter allows for polymorphism: `Motion.div` renders a `div` element and `Motion.span` renders a `span` element.
+
+In React, polymorphic components are easy to implement:
+
+```tsx
+const PolymorphicComponent = props => {
+    const { as, ...rest } = props;
+
+    const Component = as;
+
+    return <Component {...rest} />;
+};
+```
+
+But, there are more HTML elements than we can count on our fingers and `Presence` needs to be able to access an instance of `Motion` to trigger exit animations. It is possible to duplicate `Motion` for each and every type of HTML element but any change needs to be repeated more times than we can count.
+
+The way to get around this is to use a [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy), in summa: proxies allow us to intercept property access on objects, and we can leverage this to create new variations of the `Motion` component for each type of HTML element.
+
+The `Motion` component factory `PolymorphicComponentFactory` is not a component or a higher-order component (which is a subset of higher-order functions):
+
+-   The signature style of components is: `(props: Record<string, any>) => React.ReactElement`
+-   The signature style of higher-order components is: `(Component: (props: Record<string, any>) => React.ReactElement) => (props: Record<string, any>) => React.ReactElement`
+-   `PolymorphicComponentFactory`'s signature style is: `(props: Record<string, any>) => (props: Record<string, any>) => React.ReactElement`
+
+For any given `React.ReactElement`, how does React determine the 'type' of component it is? And why does it need to determine the 'type' of component it is?
+
+React needs to determine the 'type' of component it is for internal implementation details, which is not a satisfactory answer but React's source code is available [here](https://github.com/facebook/react). As for the how: each `React.ReactElement` has a `type` property, this property is a string for native HTML elements and for components, the property references the component. So, between renders if the `type` is not equal (_referential equality!_) then to React it is a different component.
+
+When new variations of `Motion` are constructed by `PolymorphicMotionFactory`, a new component is constructed each time and when this happens between renders, it gives rise to unexpected behavior such as (notice the hover):
+
+![Behavior of a dynamically constructed Motion component with unstable references](/images/frontend/soon/without-memo.gif "Behavior of a dynamically constructed Motion component with unstable references")
+
+![Behavior of a dynamically constructed Motion component with stable references](/images/frontend/soon/with-memo.gif "Behavior of a dynamically constructed Motion component with stable references")
+
+Components created by `PolymorphicComponentFactory` are tagged with a symbol to allow `Presence` to determine `Motion` children from other children (since only `Motion` children are able to animate). We cannot rely on the `type` of `React.ReactElement` to determine if they are `Motion` as they are dynamically constructed.
+
+## Are we there yet?
+
+I hope this tickled, React at its core is simple: most of React is an effort to deal with the consequences of state (_referential equality!_).
