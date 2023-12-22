@@ -5,14 +5,14 @@ const caption = Astro.props.title || Astro.props.alt;
 {!caption && <img {...Astro.props} />}
 
 {
-	caption && (
-		<figure>
-			<img {...Astro.props} />
-			{caption && (
-				<figcaption class="text-center">
-					<i>{caption}</i>
-				</figcaption>
-			)}
-		</figure>
-	)
+    caption && (
+        <figure class="flex flex-col items-center">
+            <img {...Astro.props} />
+            {caption && (
+                <figcaption class="text-center break-words max-w-[80%]">
+                    <i>{caption}</i>
+                </figcaption>
+            )}
+        </figure>
+    )
 }
