@@ -5,6 +5,7 @@ description: "A look into the motivation for and the mechanics behind React thro
 author: "Naveen Mathew"
 author_email: "dimwit_begun.0n@icloud.com"
 category: "Frontend Development"
+draft: "https://github.com/nmathew98/brittle.systems/issues/3"
 ---
 
 import Image from "../../components/Article/Image.astro";
@@ -12,7 +13,7 @@ import Link from "../../components/Article/Link.astro";
 
 export const components = { img: Image, a: Link };
 export const published = new Date("12/22/2023");
-export const modified = new Date("12/22/2023");
+export const modified = new Date("12/23/2023");
 export const tags = ["react", "javascript", "typescript", "animation"];
 
 > If you don't think managing state is tricky, consider the fact that 80% of all problems in all complex systems are fixed by rebooting.
@@ -25,7 +26,7 @@ React was borne out of a need: a need to enable a simpler model of data flow in 
 
 The mechanism React utilizes to enable a simpler model of data flow is known as reactivity (or the _Observer_ pattern): we designate some variables as state, when state updates everything that depends on it is re-evaluated.
 
-Why is the model of data flow that React enables more applicable in the context of user interfaces compared to APIs? In short: it's just the way things are, when we build user interfaces most of the job is specifying which parts of the interfaces need to update when an action occurs, when an action occurs its effects spill over into other parts of the interface. When we build APIs most of the job is processing the data that flows in, validating it and persisting it, the important distinction being that effects of these actions do not spill over into other parts of the API most of the time.
+Why is the model of data flow that React enables more applicable in the context of user interfaces compared to APIs? In short: it's just the way things are, when we build user interfaces most of the job is specifying which parts of the interface needs to update when an action occurs, when an action occurs its effects spill over into other parts of the interface. When we build APIs most of the job is processing the data that flows in, validating it and persisting it, the important distinction being that effects of these actions do not spill over into other parts of the API most of the time.
 
 Not to say that reactivity does not come up in the context of APIs, it does: in the form of publish/subscribe systems utilized mainly in event driven architectures using tools like RabbitMQ and Apache Kafka; the _Observer_ pattern at scale.
 
@@ -143,7 +144,7 @@ const Counter = () => {
 };
 ```
 
-On initial render, the text 'Hello world' is displayed on-screen then the effect is ran. The effect does not specify a dependency array, which means each time state changes it is ran again since it is not dependent on any particular state, so the effect is dependent on all states.
+On initial render, the text 'Hello world' is displayed on-screen then the effect is ran. The effect does not specify a dependency array, which means each time state changes it is ran again, since it is not dependent on any particular state, so the effect is dependent on all states.
 
 However, the effect itself triggers a state update which means:
 
@@ -202,9 +203,9 @@ Before moving forward, the structure of the component tree is:
 </Parent>
 ```
 
-The structure of the tree means that for any `Presence` child to be exited/entered, state in `Parent` must be updated which will trigger a re-render of both `Presence` and its children, so the `children` prop values will change between renders if a child is entered/exited.
+The structure of the tree means that for any `Presence` child to be entered/exited, state in `Parent` must be updated which will trigger a re-render of both `Presence` and its children, so the `children` prop values will change between renders if a child is exited/entered.
 
-To determine which children are exiting/entering, we need a few things:
+To determine which children are entering/exiting, we need a few things:
 
 -   `forcedRenders`: state allowing us to force a render (and keep track of the number of rerenders for debugging) when the last exiting child is done to remove exited child elements from the DOM
 -   `isInitialRender`: a `Ref` which is `true` for the initial render and `false` for all subsequent renders
@@ -213,7 +214,7 @@ To determine which children are exiting/entering, we need a few things:
 
 On the initial render of `Presence`, there are no child elements which are exiting or entering, so all we have to do is render the `children` and update `isInitialRender` to `true`.
 
-On subsequent renders, if there are child elements entering/exiting:
+On subsequent renders, if there are child elements exiting/entering:
 
 1. We need to diff the `children` prop value and `currentChildren` to determine `exitingChildren`, we can do this by requiring that each child has a `key` specified, if a `key` exists in `currentChildren` but not `children` then the child is exiting and vice-versa. We need to add the exiting children to `exitingChildrenLookup` by `key` to keep track of which children are done exiting
 2. For each exiting child, we attach the `animateExit` to the `ref` prop of the child. The `ref` props accepts a function and the parameters for this function is a reference to the HTML element, allowing us to perform exit animations on the child. Once a child is done exiting, we remove its entry from `exitingChildrenLookup` and once all children are done, we trigger a re-render by updating the state `forcedRenders`
@@ -234,7 +235,7 @@ With applying enter animations, all we need to do is attach a `ref` prop to the 
 
 Exit animations however are a little more complicated since HTML elements do not have an exit event. The simplest way to go about it is to expose an [imperative handle](https://react.dev/reference/react/useImperativeHandle) which allows us to expose custom event listeners (`onMouseOver`, etc) on the element. Exposing a handle is not enough, we also need to know when exit animations are done, and for this we can rely on `AnimationControls.finished` from the result of calling `animate` which is a `Promise` that resolves when the animation is complete.
 
-The `Motion` component only supports the counterparts for native HTML elements because those are the only components which are guaranteed to accept a `ref` prop and often times there the section to animate is nested within a `div`.
+The `Motion` component only supports the counterparts for native HTML elements because those are the only components which are guaranteed to accept a `ref` prop and often times the section to animate is nested within a `div`.
 
 ## Shifty components
 
