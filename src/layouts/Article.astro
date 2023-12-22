@@ -4,9 +4,9 @@ import { SEO } from "astro-seo";
 import { HomeModernIcon } from "@heroicons/react/24/solid";
 
 export interface Article extends Record<string, any> {
-	tags?: string[] | string;
-	published?: Date;
-	modified?: Date;
+    tags?: string[] | string;
+    published?: Date;
+    modified?: Date;
 }
 
 const { file, frontmatter } = Astro.props;
@@ -15,11 +15,11 @@ const ARTICLES = await Astro.glob("../pages/**/*.mdx");
 const article: Article = ARTICLES.find(article => article.file === file);
 
 const getArticleTags = () => {
-	if (Array.isArray(article.tags)) return article.tags;
+    if (Array.isArray(article.tags)) return article.tags;
 
-	const tags = article.tags || frontmatter.tags;
+    const tags = article.tags || frontmatter.tags;
 
-	return tags.split(", ");
+    return tags.split(", ");
 };
 
 const publishedTime = article.published.toISOString();
@@ -28,194 +28,204 @@ const tags = getArticleTags();
 ---
 
 <Base>
-	<SEO
-		title={`${frontmatter.title} | brittle.systems`}
-		description={frontmatter.description}
-		openGraph={{
-			basic: {
-				title: frontmatter.title,
-				type: "article",
-				// TODO: Same as favicon
-				image: "/favicon.svg",
-			},
-			optional: {
-				description: frontmatter.description,
-			},
-			article: {
-				authors: [frontmatter.author],
-				publishedTime: publishedTime,
-				modifiedTime: modifiedTime,
-				section: frontmatter.category,
-				tags: tags,
-			},
-		}}
-		slot="head"
-	/>
-	<body>
-		<div
-			class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 my-8 flex flex-col items-center lg:items-stretch lg:grid lg:justify-center lg:grid-cols-8">
-			<!-- `>= lg` -->
-			<div
-				class="hidden lg:flex col-span-3 flex-col space-y-20 max-w-xs justify-between break-words text-sky-900">
-				<header>
-					<h1 class="text-6xl font-bold hyphens-auto" lang="en">
-						{frontmatter.title}
-					</h1>
-					<h2
-						class="text-lg font-normal mt-4 italic hyphens-auto"
-						lang="en">
-						{frontmatter.description}
-					</h2>
-					<h3
-						class="estimated-time-to-read text-base font-normal mt-2">
-					</h3>
-				</header>
-				<footer class="text-lg">
-					<div class="flex justify-between items-center">
-						<div class="flex flex-col">
-							<a
-								rel="author"
-								href={`mailto:${frontmatter.author_email}`}>
-								{frontmatter.author}
-							</a>
-							<time
-								datetime={new Date(modifiedTime).toDateString()}
-								title={new Date(modifiedTime).toDateString()}>
-								{new Date(modifiedTime).toDateString()}
-							</time>
-						</div>
-						<!-- Home -->
-						<a href="/">
-							<div
-								class="transition duration-50 rounded-full
+    <SEO
+        title={`${frontmatter.title} | brittle.systems`}
+        description={frontmatter.description}
+        openGraph={{
+            basic: {
+                title: frontmatter.title,
+                type: "article",
+                // TODO: Same as favicon
+                image: "/favicon.svg",
+            },
+            optional: {
+                description: frontmatter.description,
+            },
+            article: {
+                authors: [frontmatter.author],
+                publishedTime: publishedTime,
+                modifiedTime: modifiedTime,
+                section: frontmatter.category,
+                tags: tags,
+            },
+        }}
+        slot="head"
+    />
+    <body>
+        <div
+            class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 my-8 flex flex-col items-center lg:items-stretch lg:grid lg:justify-center lg:grid-cols-8">
+            <!-- `>= lg` -->
+            <div
+                class="hidden lg:flex col-span-3 flex-col space-y-20 max-w-xs justify-between break-words text-sky-900">
+                <header>
+                    <h1 class="text-6xl font-bold hyphens-auto" lang="en">
+                        {frontmatter.title}
+                    </h1>
+                    <h2
+                        class="text-lg font-normal mt-4 italic hyphens-auto"
+                        lang="en">
+                        {frontmatter.description}
+                    </h2>
+                    <h3
+                        class="estimated-time-to-read text-base font-normal mt-2">
+                    </h3>
+                </header>
+                <footer class="text-lg">
+                    <div class="flex justify-between items-center">
+                        <div class="flex flex-col">
+                            <a
+                                rel="author"
+                                href={`mailto:${frontmatter.author_email}`}>
+                                {frontmatter.author}
+                            </a>
+                            <time
+                                datetime={new Date(modifiedTime).toDateString()}
+                                title={new Date(modifiedTime).toDateString()}>
+                                {new Date(modifiedTime).toDateString()}
+                            </time>
+                        </div>
+                        <!-- Home -->
+                        <a href="/">
+                            <div
+                                class="transition duration-50 rounded-full
 									outline outline-orange-500 bg-transparent hover:bg-orange-500
 									p-2 inline-flex items-center
 									text-orange-50 hover:text-slate-950
 									opacity-25 hover:opacity-100">
-								<HomeModernIcon
-									className="transition duration-50 h-6 w-6"
-								/>
-							</div>
-						</a>
-					</div>
-					{
-						!!tags && (
-							<div class="flex space-x-1 font-light">
-								{tags.map((tag: string) => (
-									<span>#{tag}</span>
-								))}
-							</div>
-						)
-					}
-				</footer>
-			</div>
-			<article
-				class="col-span-5 prose prose-invert prose-slate
+                                <HomeModernIcon
+                                    className="transition duration-50 h-6 w-6"
+                                />
+                            </div>
+                        </a>
+                    </div>
+                    {
+                        !!tags && (
+                            <div class="flex space-x-1 mt-20 font-light">
+                                {tags.map((tag: string) => (
+                                    <span>#{tag}</span>
+                                ))}
+                            </div>
+                        )
+                    }
+                </footer>
+            </div>
+            <article
+                class="col-span-5 prose prose-invert prose-slate
 					prose-p:font-serif prose-li:font-serif
 					prose-base md:prose-2xl lg:prose-7xl">
-				<!-- `< lg`, prose has `max-width` stuff which affects the margins -->
-				<header class="not-prose lg:hidden mb-16 text-orange-50">
-					<h1
-						class="text-2xl md:text-5xl font-bold break-words hyphens-auto">
-						{frontmatter.title}
-					</h1>
-					<h2
-						class="text-base mt-4 md:text-xl font-normal italic break-words hyphens-auto">
-						{frontmatter.description}
-					</h2>
-					<h3
-						class="estimated-time-to-read opacity-0 text-sm mt-2 md:text-lg font-normal">
-					</h3>
-				</header>
-				<!-- Reapplying prose classes here because prose has last and first
+                <!-- `< lg`, prose has `max-width` stuff which affects the margins -->
+                <header class="not-prose lg:hidden mb-16 text-orange-50">
+                    <h1
+                        class="text-2xl md:text-5xl font-bold break-words hyphens-auto">
+                        {frontmatter.title}
+                    </h1>
+                    <h2
+                        class="text-base mt-4 md:text-xl font-normal italic break-words hyphens-auto">
+                        {frontmatter.description}
+                    </h2>
+                    <h3
+                        class="estimated-time-to-read opacity-0 text-sm mt-2 md:text-lg font-normal">
+                    </h3>
+                </header>
+                <!-- Reapplying prose classes here because prose has last and first
 				child selectors which are affected even though the header above is
 				hidden at `lg` -->
-				<div
-					id="content"
-					class="col-span-5 prose prose-invert prose-slate
+                <div
+                    id="content"
+                    class="col-span-5 prose prose-invert prose-slate
 						prose-p:font-serif prose-li:font-serif
 						prose-base md:prose-2xl lg:prose-7xl">
-					<slot />
-				</div>
-				<!-- `< lg`, prose has `max-width` stuff which affects the margins -->
-				<footer
-					class="not-prose lg:hidden mt-16 flex justify-between items-center">
-					<div
-						class="text-base md:text-xl text-orange-500 flex flex-col">
-						<a
-							rel="author"
-							href={`mailto:${frontmatter.author_email}`}>
-							{frontmatter.author}
-						</a>
-						<time
-							datetime={new Date(modifiedTime).toDateString()}
-							title={new Date(modifiedTime).toDateString()}>
-							{new Date(modifiedTime).toDateString()}
-						</time>
-					</div>
-					<!-- Home -->
-					<a href="/" class="mb-1 mr-2">
-						<div
-							class="transition duration-50 rounded-full
+                    <slot />
+                </div>
+                <!-- `< lg`, prose has `max-width` stuff which affects the margins -->
+                <footer
+                    class="not-prose lg:hidden mt-16 flex justify-between items-center">
+                    <div
+                        class="text-base md:text-xl text-orange-500 flex flex-col">
+                        <a
+                            rel="author"
+                            href={`mailto:${frontmatter.author_email}`}>
+                            {frontmatter.author}
+                        </a>
+                        <time
+                            datetime={new Date(modifiedTime).toDateString()}
+                            title={new Date(modifiedTime).toDateString()}>
+                            {new Date(modifiedTime).toDateString()}
+                        </time>
+                    </div>
+                    <!-- Home -->
+                    <a href="/" class="mb-1 mr-2">
+                        <div
+                            class="transition duration-50 rounded-full
 									outline outline-orange-500 bg-transparent hover:bg-orange-500
 									p-2 inline-flex items-center
 									text-orange-50 hover:text-slate-950
 									opacity-25 hover:opacity-100">
-							<HomeModernIcon
-								className="transition duration-50 h-6 w-6 md:h-8 md:w-8"
-							/>
-						</div>
-					</a>
-				</footer>
-			</article>
-		</div>
-	</body>
+                            <HomeModernIcon
+                                className="transition duration-50 h-6 w-6 md:h-8 md:w-8"
+                            />
+                        </div>
+                    </a>
+                </footer>
+            </article>
+        </div>
+    </body>
 </Base>
 
 <script lang="ts">
-	const AVERAGE_WORDS_PER_MINUTE = 238;
-	const { innerText: content } = document.getElementById("content");
+    const AVERAGE_WORDS_PER_MINUTE = 238;
+    const { innerText: content } = document.getElementById("content");
 
-	const numberOfWords = content.match(/\S+/g).length;
-	const estimatedReadingTime = Math.floor(
-		numberOfWords / AVERAGE_WORDS_PER_MINUTE,
-	);
+    const numberOfWords = content.match(/\S+/g).length;
+    const estimatedReadingTime = Math.floor(
+        numberOfWords / AVERAGE_WORDS_PER_MINUTE,
+    );
 
-	const indicators = [
-		...document.getElementsByClassName("estimated-time-to-read"),
-	];
-	indicators.forEach(indicator => {
-		indicator.innerText = `Estimated time: ${estimatedReadingTime} minutes`;
-		indicator.classList.remove("opacity-0");
-	});
+    const indicators = [
+        ...document.getElementsByClassName("estimated-time-to-read"),
+    ];
+    indicators.forEach(indicator => {
+        indicator.innerText = `Estimated time: ${estimatedReadingTime} minutes`;
+        indicator.classList.remove("opacity-0");
+    });
 </script>
 
 <script lang="ts">
-	document.addEventListener("keydown", event => {
-		if (event.key === "Backspace" || event.key === "Escape")
-			location.pathname = "/";
-	});
+    document.addEventListener("keydown", event => {
+        if (event.key === "Backspace" || event.key === "Escape")
+            location.pathname = "/";
+    });
 
-	// Scoped styles seem to not be working when applied to `body`
-	document.body.classList.add("bg-slate-950");
+    // Scoped styles seem to not be working when applied to `body`
+    document.body.classList.add("bg-slate-950");
 </script>
 
 <style is:global>
-	code {
-		counter-reset: line;
-	}
+    /* https://kohan.dev/posts/markdown-reader-astro-rehype-pretty-code/ */
+    code {
+        counter-reset: line;
+    }
 
-	[data-line]::before {
-		counter-increment: line;
-		content: counter(line);
-		@apply mr-4 text-orange-50;
-	}
+    [data-line]::before {
+        counter-increment: line;
+        content: counter(line);
+        display: inline-block;
+        @apply mr-4 text-orange-50;
+    }
 
-	[data-line][data-highlighted-line]::before {
-		@apply text-orange-500;
-	}
+    [data-line-numbers-max-digits="2"] > [data-line]::before {
+        width: 1rem;
+    }
 
-	[data-highlighted-line] {
-		background-color: rgba(255, 255, 255, 0.05);
-	}
+    [data-line-numbers-max-digits="3"] > [data-line]::before {
+        width: 1.5rem;
+    }
+
+    [data-line][data-highlighted-line]::before {
+        @apply text-orange-500;
+    }
+
+    [data-highlighted-line] {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
 </style>
