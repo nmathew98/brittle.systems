@@ -42,7 +42,7 @@ Each time state changes and its dependencies are recalculated, the render functi
     -   So, we move it out of the render function with `useRef` (there's more to it)
     -   In principle it works kind of like this:
 
-    ```typescript
+    ```typescript showLineNumbers
     let x = 0;
 
     const addOne = () => {
@@ -58,7 +58,7 @@ Each time state changes and its dependencies are recalculated, the render functi
 
     Notice that the value of `x` does not get reset each time `addOne` is called as in this case:
 
-    ```typescript
+    ```typescript showLineNumbers
     const addOne = () => {
         let x = 0;
 
@@ -103,7 +103,7 @@ In JavaScript, the form of equality used is reference equality, if two pointers 
 
 Now, we know that whenever state changes its dependencies are recalculated and to determine if state has changed we need to compare the previous (current) state and the next state. We also know that React components accept an object as its input, so, what happens when state changes and its dependencies recalculated because inputs have changed but, the render function is made of many calls to other React components:
 
-```tsx
+```tsx showLineNumbers
 const Body = ({ count = 1000000 }) => (
     if (count === 1) {
         return <div />;
@@ -131,7 +131,7 @@ Whenever dependencies are recomputed because of a state change, `expensiveComput
 
 Circling back to the main hooks in React which provide an escape latch from recomputation each time state changes, `useEffect` and `useMemo`:
 
-```tsx
+```tsx showLineNumbers
 const Counter = () => {
     const [_, setCount] = useState(0);
 
@@ -193,7 +193,7 @@ The easiest way to implement `Presence` is to base it off how FramerMotion imple
 
 Before moving forward, the structure of the component tree is:
 
-```tsx
+```tsx showLineNumbers
 <Parent>
     <Presence>
         <Motion />
@@ -238,11 +238,11 @@ The `Motion` component only supports the counterparts for native HTML elements b
 
 ## Shifty components
 
-The API for the React implementation is based (loosely) on [Motion One for Solid](https://motion.dev/solid/quick-start), the `Motion` component in the latter allows for polymorphism: `Motion.div` renders a `div` element and `Motion.span` renders a `span` element.
+The API for the React implementation is based (loosely) upon [Motion One for Solid](https://motion.dev/solid/quick-start), the `Motion` component in the latter allows for polymorphism: `Motion.div` renders a `div` element and `Motion.span` renders a `span` element.
 
 In React, polymorphic components are easy to implement:
 
-```tsx
+```tsx showLineNumbers
 const PolymorphicComponent = props => {
     const { as, ...rest } = props;
 
