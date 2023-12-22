@@ -7,7 +7,7 @@
     },
     "license": "WTFPL-2.0",
     "type": "module",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "scripts": {
         "dev": "astro dev",
         "start": "astro dev",
