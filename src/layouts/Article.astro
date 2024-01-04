@@ -100,7 +100,7 @@ const tags = getArticleTags();
                     </div>
                     {
                         !!tags && (
-                            <div class="flex space-x-1 mt-4 font-light">
+                            <div class="space-x-1 break-words hyphens-auto mt-4 font-light">
                                 {tags.map((tag: string) => (
                                     <span>#{tag}</span>
                                 ))}
@@ -204,6 +204,11 @@ const tags = getArticleTags();
     /* https://kohan.dev/posts/markdown-reader-astro-rehype-pretty-code/ */
     code {
         counter-reset: line;
+    }
+
+    figure[data-rehype-pretty-code-figure] > pre {
+        max-width: 90vw;
+        overflow: scroll;
     }
 
     [data-line]::before {

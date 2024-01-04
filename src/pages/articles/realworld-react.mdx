@@ -1,0 +1,195 @@
+---
+layout: "../../layouts/Article.astro"
+title: "Commit #4cc88b2"
+description: "Building a RealWorld blogging platform with React"
+author: "Naveen Mathew"
+author_email: "dimwit_begun.0n@icloud.com"
+category: "Frontend Development"
+draft: "https://github.com/nmathew98/brittle.systems/issues/46"
+---
+
+import Link from "../../components/Article/Link.astro";
+
+export const components = { a: Link };
+export const published = new Date("01/05/2024");
+export const modified = new Date("01/05/2024");
+export const tags = [
+    "react",
+    "javascript",
+    "typescript",
+    "real",
+    "world",
+    "conduit",
+    "context",
+    "dependency",
+    "injection",
+    "url",
+    "state",
+    "hook",
+    "factory",
+];
+
+> Learning to choose is hard. Learning to choose well is harder. And learning to choose well in a world of unlimited possibilities is harder still, perhaps too hard.
+>
+> <cite>Barry Schwartz</cite>
+
+## Only the best will do
+
+Compared to other modern-day frameworks in the front-end space such as Vue, Svelte and Angular in particular, React stands out in being relatively un-opinionated about matters relating to structure. The flexibility it provides is both a blessing and a curse, the lack of predefined structure means we don't have to shoe-horn applications of every kind of complexity into the same structure; simple applications do not need much indirection and can be built up in a relatively simple manner, complex applications require more indirection with simple structures working against the grain, and some applications require a structure which evolves as time goes by to keep development velocity constant. It is a curse because new eyes will need time to familiarize themselves with the way things are done for each project and the rules defined to enforce the structure may not be general enough to be applicable all the time -- with large projects involving many collaborators, the structure should be relatively static.
+
+Building out proof of concepts is a great way to validate an approach and [RealWorld](https://github.com/gothinkster/realworld) is one such demo application which provides a specification of many features which crop-up in production scenarios while leaving out the specifics.
+
+Without further ado, the: [implementation](https://github.com/nmathew98/realworld/tree/frontend-react).
+
+## It depends?
+
+The [Context API](https://react.dev/learn/passing-data-deeply-with-context) is intended to allow data to be shared at multiple levels of the component tree without it having to pass through every level: some child many levels down uses state which is present in parent but the intermediate levels do not use the state, we can either pass the state down through each level (in which case if state changes then each of these will also re-render if props have changed), or we can use `Context` which allows a component to observe changes to the value it provides (the React docs linked provide a more explicit explanation). When providing context values, it is important to remember that if an object is provided then upon re-renders, a new value is provided ([_referential equality!_](/articles/soon#unequally-equal)), the only way around this is to `useMemo`.
+
+More commonly however, `Context` is utilized for dependency injection, placing data fetchers (queries and mutations) and transformers within context allows components with feature specific logic to be rendered in different contexts such as testing or showcasing it within Storybook, [this](https://blog.testdouble.com/posts/2021-03-19-react-context-for-dependency-injection-not-state/) article elaborates further. Not everything needs to be injected in, service factories should be the first thing to reach for instead of `Context`.
+
+In my opinion, placing state within `Context` is a bad idea (with the exception of data that should be available globally such as authentication information or user profile information) because it is usually high up in the component tree, any state change will cause re-renders all over the place (if everything below is not `memo`'d).
+
+Storing globally available data such as user profile data in a `Context` is an exception because when these are not available, we usually want to log the user out or retry the authentication and log out if it fails again -- transitioning globally available data between its various states should be handled uniformly not on a case-by-case basis.
+
+## Catch of the day
+
+React `Hook`s allow us to decouple logic from view in the application by allowing us to store stateful logic within it; by shifting the creation of event listeners and the logic for state transitions into hooks, we can easily move the functionality for one feature into another page, all we have to do is instantiate new event listeners and attach them to the relevant elements.
+
+It is hard to unit test hooks, they usually have third-party dependencies which need to be mocked out and the effort required to do so is not worth it. Hooks are also simple most of the time, all we do is combine or transform the shape of some input(s) to send it off to the back-end for processing and so in the implementation the large majority of hooks are not unit tested.
+
+That being said, in the implementation, article filters are stored in the URL to allow shareable links and this functionality is not unit tested when it should have been as it is easy to break and hard to notice:
+
+```typescript {2-36} showLineNumbers
+usePreviousValueEffect((from, to) => {
+    // When clicking the conduit logo
+    // When we trigger a pagination item click directly,
+    // `from.searchParams.offset === to.searchParams.offset === 0`
+    // but there is no hash
+    const currentLocation = window.location;
+    if (!to.hash) currentLocation.hash = from.hash;
+
+    // This is handled by the effect on type
+    if (location.hash !== to.hash) return undefined;
+
+    const fromSearch = new URLSearchParams(from.search);
+    const toSearch = new URLSearchParams(to.search);
+
+    // `setSearchParams` modifies the hash to remove it
+    if (fromSearch.get("offset") !== toSearch.get("offset")) {
+        if (!to.hash) currentLocation.hash = from.hash;
+
+        // If we have changed pages then there will already be a fetch in progress
+        // If not we go from changing tags to global but with an offset of zero
+        // so we will refetch
+        if (isFetchingArticles) return undefined;
+
+        // We run into this case when clicking on the conduit logo, it wont be fetching
+        // but the offset is zero so we have to trigger a pagination item click
+        if (!isFetchingArticles) {
+            if (toSearch.has("offset")) {
+                const toPage = convertOffsetToPage(
+                    toSearch.get("offset") as string,
+                    filters.limit,
+                );
+
+                makeOnClickPaginationItem(toPage)();
+            }
+        }
+    }
+
+    refetchArticles();
+}, location);
+```
+
+The approach I would have taken to unit test it would be to move the highlighted lines into its own function and accept its dependencies `from`, `to`, `currentLocation`, `isFetchingArticles` and `makeOnClickPaginationItem` as parameters and check that `makeOnClickPaginationItem` is called when it should be.
+
+## Rule of three
+
+According to the grapevine: a structure should only be factored out into a component when it appears 3 times or more, which I think is a pretty good rule of thumb. The exception I think are complicated structures such as `ArticleActionBar` (which is only used by `ArticleHeader`):
+
+```tsx
+export const ArticleActionBar = ({
+    onClickFollowAuthor,
+    onClickFavorite,
+    onClickEditArticle,
+    onClickDeleteArticle,
+    profileLink,
+    profileImage,
+    author,
+    createdAt,
+    favoritesCount,
+    isAuthor,
+    isFollowingAuthor,
+    isLoadingFavoriteArticle,
+    isLoadingDeleteArticle,
+    isLoadingFollowAuthor,
+}: ArticleActionBarProps) => (
+    <>
+        <Link to={profileLink}>
+            <img src={profileImage} />
+        </Link>
+        <div className="info">
+            <Link to={profileLink} className="author">
+                {author}
+            </Link>
+            <span className="date">{formatDate(createdAt)}</span>
+        </div>
+        {isAuthor ? null : (
+            <>
+                <ButtonAction
+                    type="secondary"
+                    icon="ion-plus-round"
+                    onClick={onClickFollowAuthor}
+                    disabled={isLoadingFollowAuthor}>
+                    {isFollowingAuthor
+                        ? `Unfollow ${author}`
+                        : `Follow ${author}`}
+                </ButtonAction>
+                &nbsp;
+                <ButtonAction
+                    type="primary"
+                    icon="ion-heart"
+                    onClick={onClickFavorite}
+                    disabled={isLoadingFavoriteArticle}>
+                    Favorite Article{" "}
+                    <span className="counter">({favoritesCount})</span>
+                </ButtonAction>
+            </>
+        )}
+        {!isAuthor ? null : (
+            <>
+                <ButtonAction
+                    type="secondary"
+                    icon="ion-edit"
+                    onClick={onClickEditArticle}>
+                    Edit Article
+                </ButtonAction>
+                &nbsp;
+                <ButtonAction
+                    type="danger"
+                    icon="ion-trash-a"
+                    onClick={onClickDeleteArticle}
+                    disabled={isLoadingDeleteArticle}>
+                    Delete Article
+                </ButtonAction>
+            </>
+        )}
+    </>
+);
+```
+
+Reason for this is because merging `ArticleActionBar` and `ArticleHeader` would make it really hard to differentiate between header related elements such as title and subtitle from action bar related elements.
+
+HTML already gives us a good set of tried and tested guidelines when it comes to building reusable components: they should be widely applicable by minimizing the state contained within and being as granular as possible (a `form` is made up of many `input` for example, and a `table` of many `tr`).
+
+When it comes to feature specific state and re-renders, React is centred more around reactive hotspots than fine-grained reactivity (lift state up) so minimizing the use of `memo` and relying on `children` is a better strategy: build small reusable composable components much like native HTML elements and let re-renders happen as they should before reaching for `memo` ([The Uphill Battle of Memoization](https://tkdodo.eu/blog/the-uphill-battle-of-memoization) goes in depth as to why).
+
+## Microphone check: 1... 2... x2
+
+Most (not backed up by any form of statistics) people would say that in an ideal world everything is tested: components, utility functions, hooks, end-to-end, I disagree, in my view unit tests for easy to break but hard to notice parts of hooks along with end-to-end tests are important but everything else just adds noise.
+
+The reason for tests is to catch regressions before things go out into production, end-to-end tests catch any form of regression but they also take quite a while to write/run and are often (_Context!_) flaky (running end-to-end tests requires an API to be running which can fail) so we run unit tests to shorten the feedback cycle.
+
+When it comes to unit tests for components, rarely does the structure of one component in isolation matter as much as the structure of the entire page being right, changes to components are also usually intentional, so I think we add a lot of snapshots for nothing in the end really.
+
+As for hooks, most of a hook is third-party code which we mock out anyway and the little code we do write is either a `map` or a `reduce` of which `reduce` is the only one that gets complicated most of the time.
