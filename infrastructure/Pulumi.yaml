@@ -1,0 +1,7 @@
+name: brittle-systems
+runtime: go
+description: brittle-systems CMS
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: go

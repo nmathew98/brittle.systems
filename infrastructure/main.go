@@ -8,6 +8,9 @@ import (
 )
 
 var (
+	DIGITALOCEAN_TOKEN = ferrite.
+				String("DIGITALOCEAN_TOKEN", "DigitalOcean token").
+				Required()
 	DROPLET_INSTANCE_NAME = ferrite.
 				String("DROPLET_INSTANCE_NAME", "Unique name for droplet").
 				Required()
