@@ -30,11 +30,12 @@ var (
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
 		droplet, err := digitalocean.NewDroplet(ctx, DROPLET_INSTANCE_NAME.Value(), &digitalocean.DropletArgs{
-			Image:   pulumi.String("ubuntu-24-10-x64"),
-			Name:    pulumi.String(DROPLET_INSTANCE_NAME.Value()),
-			Region:  pulumi.String(digitalocean.RegionSYD1),
-			Size:    pulumi.String(digitalocean.DropletSlugDropletS1VCPU1GB),
-			Backups: pulumi.Bool(true),
+			Image:        pulumi.String("ubuntu-24-10-x64"),
+			Name:         pulumi.String(DROPLET_INSTANCE_NAME.Value()),
+			Region:       pulumi.String(digitalocean.RegionSYD1),
+			Size:         pulumi.String(digitalocean.DropletSlugDropletS1VCPU1GB),
+			Backups:      pulumi.Bool(true),
+			DropletAgent: pulumi.Bool(true),
 			SshKeys: pulumi.ToStringArray([]string{
 				DO_SSH_PUBLIC_KEY.Value(),
 			}),
