@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strconv"
+
 	"github.com/dogmatiq/ferrite"
 	"github.com/pulumi/pulumi-cloudflare/sdk/v5/go/cloudflare"
 	"github.com/pulumi/pulumi-digitalocean/sdk/v4/go/digitalocean"
@@ -43,9 +45,19 @@ func main() {
 
 		ctx.Export("id", droplet.ID())
 
-		droplet.ID().ApplyT(func(dropletId int) error {
+		toIntPtr := func(val string) (*int, error) {
+			i, err := strconv.Atoi(val)
+			return &i, err
+		}
+
+		droplet.ID().ApplyT(func(dropletId string) error {
+			id, err := toIntPtr(dropletId)
+			if err != nil {
+				return err
+			}
+
 			static, err := digitalocean.NewReservedIp(ctx, DROPLET_INSTANCE_NAME.Value(), &digitalocean.ReservedIpArgs{
-				DropletId: pulumi.Int(dropletId),
+				DropletId: pulumi.IntPtrFromPtr(id),
 				Region:    pulumi.String(digitalocean.RegionSYD1),
 			})
 			if err != nil {
