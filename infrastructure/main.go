@@ -45,19 +45,19 @@ func main() {
 
 		ctx.Export("id", droplet.ID())
 
-		toIntPtr := func(val string) (*int, error) {
+		toInt := func(val string) (int, error) {
 			i, err := strconv.Atoi(val)
-			return &i, err
+			return i, err
 		}
 
 		droplet.ID().ApplyT(func(dropletId string) error {
-			id, err := toIntPtr(dropletId)
+			id, err := toInt(dropletId)
 			if err != nil {
 				return err
 			}
 
 			static, err := digitalocean.NewReservedIp(ctx, DROPLET_INSTANCE_NAME.Value(), &digitalocean.ReservedIpArgs{
-				DropletId: pulumi.IntPtrFromPtr(id),
+				DropletId: pulumi.IntPtr(id),
 				Region:    pulumi.String(digitalocean.RegionSYD1),
 			})
 			if err != nil {
