@@ -42,4 +42,4 @@ jobs:
           CLOUDFLARE_ZONE_ID: ${{ vars.CLOUDFLARE_ZONE_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           DO_SSH_PUBLIC_KEY: ${{ vars.DO_SSH_PUBLIC_KEY }}
-          DIGITALOCEAN_TOKEN: ${{ vars.DIGITALOCEAN_TOKEN }}
+          DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
