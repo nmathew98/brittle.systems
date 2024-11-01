@@ -21,12 +21,12 @@ services:
       - source: proxy.key
         target: /certs/privkey.pem
     networks:
-      - landing
+      - sail
     ulimits:
       nofile:
         soft: 20000
         hard: 20000
 
 networks:
-  landing:
+  sail:
     external: true
