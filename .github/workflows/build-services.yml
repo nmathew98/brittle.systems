@@ -41,6 +41,5 @@ jobs:
             composer install --ignore-platform-reqs
 
           ./vendor/bin/sail -f docker-compose.build.yml build \
-            -t skulpture/brittle-systems:${TAG:-latest} \
             --no-cache --with-dependencies
           docker image ls
