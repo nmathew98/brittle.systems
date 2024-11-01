@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "bmewburn.vscode-intelephense-client",
+        "DEVSENSE.composer-php-vscode",
+        "bradlc.vscode-tailwindcss",
+        "ryannaddy.laravel-artisan",
+        "DEVSENSE.composer-php-vscode",
+        "Gruntfuggly.todo-tree",
+        "IBM.output-colorizer"
+    ],
+    "unwantedRecommendations": []
+}
