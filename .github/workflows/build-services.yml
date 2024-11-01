@@ -40,5 +40,6 @@ jobs:
             laravelsail/php83-composer:latest \
             composer install --ignore-platform-reqs
 
-          ./vendor/bin/sail build
+          ./vendor/bin/sail build --no-cache --with-dependencies
+          docker image ls
 
