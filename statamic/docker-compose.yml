@@ -5,7 +5,15 @@ networks:
     attachable: true
 
 services:
+  setup:
+    image: laravelsail/php81-composer
+    command: composer install --ignore-platform-reqs
+    volumes:
+      - .:/var/www/html
+
   statamic:
+    depends_on:
+      - setup
     build:
       context: ./vendor/laravel/sail/runtimes/8.3
       dockerfile: Dockerfile
