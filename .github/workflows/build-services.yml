@@ -42,7 +42,7 @@ jobs:
         env:
           TAG: ${{ (env.BRANCH_NAME == 'master' && 'latest') || env.BRANCH_NAME }}
         with:
-          context: "{{defaultContext}}:api"
+          context: "{{defaultContext}}:statamic"
           platforms: linux/amd64,linux/arm64
           push: false
           tags: |
