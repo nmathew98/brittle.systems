@@ -8,9 +8,6 @@ services:
   statamic:
     image: skulpture/brittle-systems:${TAG:-latest}
     restart: unless-stopped
-    # Laravel creates a directory for logs at `storage/logs` and fails with
-    # permission denied otherwise
-    privileged: true
     environment:
       WWWUSER: ${WWWUSER}
       LARAVEL_SAIL: 1
