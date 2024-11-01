@@ -27,6 +27,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: "Build Docker image: brittle-systems"
+        working-directory: statamic
         env:
           TAG: ${{ (env.BRANCH_NAME == 'master' && 'latest') || env.BRANCH_NAME }}
         run: |
@@ -34,7 +35,7 @@ jobs:
           
           docker run --rm \
             -u "$(id -u):$(id -g)" \
-            -v "./statamic:/var/www/html" \
+            -v "$(pwd):/var/www/html" \
             -w /var/www/html \
             laravelsail/php83-composer:latest \
             composer install --ignore-platform-reqs
