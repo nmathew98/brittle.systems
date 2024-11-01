@@ -7,6 +7,7 @@ networks:
 services:
   statamic:
     image: skulpture/brittle-systems:${TAG:-latest}
+    restart: unless-stopped
     environment:
       WWWUSER: ${WWWUSER}
       LARAVEL_SAIL: 1
@@ -19,5 +20,6 @@ services:
       mode: replicated
       replicas: 1
     ulimits:
-      soft: 20000
-      hard: 20000
+      nofile:
+        soft: 20000
+        hard: 20000
