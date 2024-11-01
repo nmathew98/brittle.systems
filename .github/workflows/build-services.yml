@@ -40,5 +40,5 @@ jobs:
             laravelsail/php83-composer:latest \
             composer install --ignore-platform-reqs
 
-          ./vendor/bin/sail build --platform linux/amd64,linux/arm64
+          ./vendor/bin/sail build
 
