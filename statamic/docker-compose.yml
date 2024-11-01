@@ -7,8 +7,6 @@ networks:
 services:
   statamic:
     image: skulpture/brittle-systems:${TAG:-latest}
-    extra_hosts:
-      - host.docker.internal:host-gateway
     environment:
       WWWUSER: ${WWWUSER}
       LARAVEL_SAIL: 1
