@@ -26,7 +26,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: "Install dependencies: brittle-systems"
+      - name: "Build Docker image: brittle-systems"
+        env:
+          TAG: ${{ (env.BRANCH_NAME == 'master' && 'latest') || env.BRANCH_NAME }}
         run: |
           # https://laravel.com/docs/11.x/sail#installing-composer-dependencies-for-existing-projects
           
@@ -36,14 +38,6 @@ jobs:
             -w /var/www/html \
             laravelsail/php83-composer:latest \
             composer install --ignore-platform-reqs
-            
-      - name: "Build Docker image: brittle-systems"
-        uses: docker/build-push-action@v5
-        env:
-          TAG: ${{ (env.BRANCH_NAME == 'master' && 'latest') || env.BRANCH_NAME }}
-        with:
-          context: "{{defaultContext}}:statamic"
-          platforms: linux/amd64,linux/arm64
-          push: false
-          tags: |
-            skulpture/brittle-systems:${{ env.TAG }}
+
+          ./vendor/bin/sail build --platform linux/amd64,linux/arm64
+
