@@ -7,14 +7,14 @@ networks:
 services:
   statamic:
     build:
-      context: './vendor/laravel/sail/runtimes/8.3'
+      context: ./vendor/laravel/sail/runtimes/8.3
+      image: skulpture/brittle-systems:${TAG:-latest}
       dockerfile: Dockerfile
       platforms:
         - linux/amd64
         - linux/arm64
       args:
         WWWGROUP: '${WWWGROUP}'
-    image: skulpture/brittle-systems:${TAG:-latest}
     extra_hosts:
       - host.docker.internal:host-gateway
     environment:
