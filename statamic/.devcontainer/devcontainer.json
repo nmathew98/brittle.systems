@@ -2,19 +2,13 @@
 {
 	"name": "Existing Docker Compose (Extend)",
 	"dockerComposeFile": [
-		"../docker-compose.yml"
+		"../docker-compose.dev.yml"
 	],
 	"service": "laravel.test",
 	"workspaceFolder": "/var/www/html",
 	"customizations": {
 		"vscode": {
-			"extensions": [
-				// "mikestead.dotenv",
-				// "amiralizadeh9480.laravel-extra-intellisense",
-				// "ryannaddy.laravel-artisan",
-				// "onecentlin.laravel5-snippets",
-				// "onecentlin.laravel-blade"
-			],
+			"extensions": [],
 			"settings": {}
 		}
 	},
