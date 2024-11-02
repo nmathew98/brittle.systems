@@ -1,18 +1,21 @@
-/** @type {import('tailwindcss').Config} */
 export default {
-    content: [
+  content: [
         './resources/**/*.antlers.html',
-        './resources/**/*.antlers.php',
         './resources/**/*.blade.php',
-        './resources/**/*.vue',
-        './content/**/*.md',
+        './content/**/*.md'
     ],
-
     theme: {
-        extend: {},
+        fontFamily: {
+            sans: ['Inter', 'sans'],
+            mono: ['Menlo', 'monospace']
+        },
+        extend: {
+            colors: {
+                'teal': '#008483',
+                'teal-light': '#a6d0cf'
+            }
+        }
     },
-
-    plugins: [
-        require('@tailwindcss/typography'),
-    ],
-};
+    plugins: [],
+    important: true
+}
