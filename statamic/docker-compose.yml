@@ -10,7 +10,7 @@ services:
     restart: unless-stopped
     extra_hosts:
       - host.docker.internal:host-gateway
-    command: >
+    entrypoint: >
       bash -c "
         touch .env &&
         php artisan optimize:clear &&
