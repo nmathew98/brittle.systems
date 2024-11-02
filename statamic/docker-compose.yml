@@ -5,7 +5,7 @@ networks:
     attachable: true
 
 services:
-  statamic:
+  statamic-prod:
     image: skulpture/brittle-systems:${TAG:-latest}
     restart: unless-stopped
     extra_hosts:
@@ -39,6 +39,51 @@ services:
       STATAMIC_API_ENABLED: ${STATAMIC_API_ENABLED}
       LOG_LEVEL: ${LOG_LEVEL}
       VITE_APP_NAME: ${APP_NAME}
+      APP_ENV: production
+    volumes:
+      - .:/var/www/html
+    deploy:
+      mode: replicated
+      replicas: 1
+    ulimits:
+      nofile:
+        soft: 20000
+        hard: 20000
+  statamic-dev:
+    image: skulpture/brittle-systems:${TAG:-latest}
+    restart: unless-stopped
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    entrypoint: bash
+    command: >
+      -c "
+       touch .env &&
+       php artisan optimize:clear &&
+       php artisan optimize &&
+       # build frontend
+       pnpm install &&
+       pnpm build &&
+       # see `start-container`
+       /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"
+    environment:
+      WWWUSER: ${WWWUSER}
+      LARAVEL_SAIL: 1
+      XDEBUG_MODE: ${SAIL_XDEBUG_MODE:-off}
+      XDEBUG_CONFIG: ${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}
+      IGNITION_LOCAL_SITES_PATH: ${PWD}
+      APP_KEY: ${APP_KEY}
+      APP_TIMEZONE: ${APP_TIMEZONE}
+      SESSION_DOMAIN: ${SESSION_DOMAIN}
+      CACHE_STORE: ${CACHE_STORE}
+      APP_URL: ${APP_URL}
+      DB_CONECTION: ${DB_CONECTION}
+      APP_MAINTENANCE_DRIVER=file: ${APP_MAINTENANCE_DRIVER}
+      APP_DEBUG: ${APP_DEBUG}
+      SESSION_ENCRYPT: ${SESSION_ENCRYPT}
+      STATAMIC_API_ENABLED: ${STATAMIC_API_ENABLED}
+      LOG_LEVEL: ${LOG_LEVEL}
+      VITE_APP_NAME: ${APP_NAME}
+      APP_ENV: development
     volumes:
       - .:/var/www/html
     deploy:
