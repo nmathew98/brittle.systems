@@ -17,7 +17,9 @@ return [
     'keycloak' => [
         'client_id' => env('OAUTH_KEYCLOAK_CLIENT_ID'),
         'client_secret' => env('OAUTH_KEYCLOAK_CLIENT_SECRET'),
-        'redirect' => 'https://brittle.systems/oauth/keycloak/callback'
+        'redirect' => env('OAUTH_KEYCLOAK_REDIRECT_URI'),
+        'base_url' => env('OAUTH_KEYCLOAK_BASE_URL'),
+        'realms' => env('OAUTH_KEYCLOAK_REALM')
     ],
 
     'postmark' => [
