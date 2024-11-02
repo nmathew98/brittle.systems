@@ -1,0 +1,153 @@
+name: Deploy services
+
+on:
+  push:
+    branches: [master, staging, dev]
+  workflow_dispatch:
+
+env:
+  BRANCH_NAME: ${{ github.base_ref || github.ref_name }}
+
+jobs:
+  up:
+    if: contains(vars.UP, github.base_ref || github.ref_name)
+    permissions:
+      contents: read
+      id-token: write
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: "Install dependencies: infrastructure"
+        run: go mod download
+        working-directory: infrastructure
+        
+      - name: "Deploy stack: skulpture/brittle-systems"
+        uses: pulumi/actions@v5
+        with:
+          command: up
+          stack-name: "skulpture/brittle-systems/statamic"
+          comment-on-pr: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          work-dir: "infrastructure"
+          upsert: true
+          suppress-outputs: true
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+          COMPUTE_INSTANCE_NAME: "brittle-systems"
+          CLOUDFLARE_ZONE_ID: ${{ vars.CLOUDFLARE_ZONE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          DO_SSH_PUBLIC_KEY: ${{ vars.DO_SSH_PUBLIC_KEY }}
+          DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
+
+  build:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: "Build Docker image: brittle-systems"
+        working-directory: statamic
+        env:
+          TAG: ${{ (env.BRANCH_NAME == 'master' && 'latest') || env.BRANCH_NAME }}
+        run: |
+          # https://laravel.com/docs/11.x/sail#installing-composer-dependencies-for-existing-projects
+          
+          docker run --rm \
+            -u "$(id -u):$(id -g)" \
+            -v "$(pwd):/var/www/html" \
+            -w /var/www/html \
+            laravelsail/php83-composer:latest \
+            composer install --ignore-platform-reqs
+
+          ./vendor/bin/sail -f docker-compose.build.yml build \
+            --no-cache --with-dependencies --push
+          docker image ls
+
+  deploy:    
+    permissions:
+      contents: read
+      id-token: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [statamic]
+        branch: [master] # staging, dev
+
+    environment: "brittle-systems-${{ matrix.branch }}"
+
+    needs: [up, build]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy files to DO (${{ matrix.branch }})
+        uses: appleboy/scp-action@master
+        # if: env.BRANCH_NAME == matrix.branch
+        with:
+          host: ${{ secrets.DO_VM_HOST }}
+          username: ${{ secrets.DO_VM_USERNAME }}
+          key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.DO_SSH_PASSPHRASE }}
+          port: 22
+          overwrite: true
+          source: "./*"
+          target: "./brittle-systems-${{ env.BRANCH_NAME }}"
+
+      - name: Deploy brittle-systems (${{ matrix.branch }})
+        uses: appleboy/ssh-action@master
+        if: contains(vars.DEPLOY, env.BRANCH_NAME)
+        env:
+          STACK_NAME: ${{ matrix.service }}
+          SERVICES_DOCKER_COMPOSE_FILE: docker-compose.yml
+          PROXY_DOCKER_COMPOSE_FILE: docker-compose.proxy.yml
+          ENV_FILE: ~/.env
+        with:
+          host: ${{ secrets.DO_VM_HOST }}
+          username: ${{ secrets.DO_VM_USERNAME }}
+          key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.DO_SSH_PASSPHRASE }}
+          port: 22
+          script: |
+            # TODO: pull latest
+            export $(docker run --rm --env-file ${{ env.ENV_FILE }} skulpture/kryptos:staging cat | xargs)
+
+            if [[ "${{ env.BRANCH_NAME }}" != "master" ]]; then
+              export TAG=${{ env.BRANCH_NAME }}
+            fi
+
+            cd brittle-systems-${{ env.BRANCH_NAME }}/${{ matrix.service }}
+
+            docker run --rm \
+              -u "$(id -u):$(id -g)" \
+              -v "$(pwd):/var/www/html" \
+              -w /var/www/html \
+              laravelsail/php83-composer:latest \
+              composer install --ignore-platform-reqs
+
+            # https://stackoverflow.com/a/73186021
+            sudo chmod -R 777 storage/
+
+            docker stack deploy --compose-file ${{ env.SERVICES_DOCKER_COMPOSE_FILE }} ${{ env.STACK_NAME }} --detach=false
+            docker service update ${{ env.STACK_NAME }}_proxy --force
+            docker stack deploy --compose-file ${{ env.PROXY_DOCKER_COMPOSE_FILE }} ${{ env.STACK_NAME }} --detach=false
+            docker system prune -af
