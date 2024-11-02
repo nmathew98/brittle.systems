@@ -78,7 +78,7 @@ jobs:
             composer install --ignore-platform-reqs
 
           ./vendor/bin/sail -f docker-compose.build.yml build \
-            --no-cache --with-dependencies --push
+            --no-cache --with-dependencies --parallel --push
           docker image ls
 
   deploy:    
