@@ -10,16 +10,17 @@ services:
     restart: unless-stopped
     extra_hosts:
       - host.docker.internal:host-gateway
-    entrypoint: >
-      bash -c "
-        touch .env &&
-        php artisan optimize:clear &&
-        php artisan optimize &&
-        # build frontend
-        pnpm install &&
-        pnpm build &&
-        # see `start-container`
-        /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"
+    entrypoint: bash
+    command: >
+      -c "
+       touch .env &&
+       php artisan optimize:clear &&
+       php artisan optimize &&
+       # build frontend
+       pnpm install &&
+       pnpm build &&
+       # see `start-container`
+       /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"
     environment:
       WWWUSER: ${WWWUSER}
       LARAVEL_SAIL: 1
