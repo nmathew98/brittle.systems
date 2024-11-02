@@ -1,5 +1,5 @@
 export default {
-  content: [
+    content: [
         './resources/**/*.antlers.html',
         './resources/**/*.blade.php',
         './content/**/*.md'
