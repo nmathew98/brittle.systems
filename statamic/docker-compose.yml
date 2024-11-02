@@ -15,6 +15,7 @@ services:
       -c "
        touch .env &&
        php artisan optimize:clear &&
+       php artisan config:cache &&
        php artisan optimize &&
        # build frontend
        pnpm install &&
@@ -70,6 +71,7 @@ services:
       -c "
        touch .env &&
        php artisan optimize:clear &&
+       php artisan config:cache &&
        php artisan optimize &&
        # build frontend
        pnpm install &&
