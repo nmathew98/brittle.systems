@@ -136,7 +136,7 @@ jobs:
             fi
 
             # https://stackoverflow.com/a/73186021
-            sudo chmod -R 777 rittle-systems-${{ env.BRANCH_NAME }}/${{ matrix.service }}
+            sudo chmod -R 777 brittle-systems-${{ env.BRANCH_NAME }}/${{ matrix.service }}
 
             cd brittle-systems-${{ env.BRANCH_NAME }}/${{ matrix.service }}
 
