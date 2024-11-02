@@ -7,7 +7,7 @@ return [
     'email_login_enabled' => true,
 
     'providers' => [
-        // 'github',
+        'keycloak'
     ],
 
     'routes' => [

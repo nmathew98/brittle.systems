@@ -14,6 +14,12 @@ return [
     |
     */
 
+    'keycloak' => [
+        'client_id' => env('OAUTH_KEYCLOAK_CLIENT_ID'),
+        'client_secret' => env('OAUTH_KEYCLOAK_CLIENT_SECRET'),
+        'redirect' => 'https://brittle.systems/oauth/keycloak/callback'
+    ],
+
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
