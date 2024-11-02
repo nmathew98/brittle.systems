@@ -129,7 +129,7 @@ jobs:
           port: 22
           script: |
             # TODO: pull latest
-            # export $(docker run --rm --env-file ${{ env.ENV_FILE }} skulpture/kryptos:staging cat | xargs)
+            export $(docker run --rm --env-file ${{ env.ENV_FILE }} skulpture/kryptos:staging cat | xargs)
 
             if [[ "${{ env.BRANCH_NAME }}" != "master" ]]; then
               export TAG=${{ env.BRANCH_NAME }}
