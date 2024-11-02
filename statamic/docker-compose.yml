@@ -6,7 +6,7 @@ networks:
 
 services:
   statamic-prod:
-    image: skulpture/brittle-systems:${TAG:-latest}
+    image: skulpture/brittle-systems
     restart: unless-stopped
     extra_hosts:
       - host.docker.internal:host-gateway
@@ -33,6 +33,7 @@ services:
       CACHE_STORE: ${CACHE_STORE}
       APP_URL: ${APP_URL}
       DB_CONECTION: ${DB_CONECTION}
+      DATABASE_URL: ${DATABASE_URL}
       APP_MAINTENANCE_DRIVER: ${APP_MAINTENANCE_DRIVER}
       APP_DEBUG: ${APP_DEBUG}
       SESSION_ENCRYPT: ${SESSION_ENCRYPT}
@@ -50,7 +51,7 @@ services:
         soft: 20000
         hard: 20000
   statamic-dev:
-    image: skulpture/brittle-systems:${TAG:-latest}
+    image: skulpture/brittle-systems:dev
     restart: unless-stopped
     extra_hosts:
       - host.docker.internal:host-gateway
@@ -77,6 +78,7 @@ services:
       CACHE_STORE: ${CACHE_STORE}
       APP_URL: ${APP_URL}
       DB_CONECTION: ${DB_CONECTION}
+      DATABASE_URL: ${DATABASE_URL}
       APP_MAINTENANCE_DRIVER: ${APP_MAINTENANCE_DRIVER}
       APP_DEBUG: ${APP_DEBUG}
       SESSION_ENCRYPT: ${SESSION_ENCRYPT}
