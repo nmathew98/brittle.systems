@@ -6,7 +6,7 @@ networks:
 
 services:
   statamic-prod:
-    image: skulpture/brittle-systems:${TAG:-latest}
+    image: skulpture/brittle-systems
     restart: unless-stopped
     extra_hosts:
       - host.docker.internal:host-gateway
@@ -51,7 +51,7 @@ services:
         soft: 20000
         hard: 20000
   statamic-dev:
-    image: skulpture/brittle-systems:${TAG:-latest}
+    image: skulpture/brittle-systems:dev
     restart: unless-stopped
     extra_hosts:
       - host.docker.internal:host-gateway
