@@ -78,6 +78,17 @@ func main() {
 				return err
 			}
 
+			_, err = cloudflare.NewRecord(ctx, DROPLET_INSTANCE_NAME.Value(), &cloudflare.RecordArgs{
+				ZoneId:  pulumi.String(CLOUDFLARE_ZONE_ID.Value()),
+				Name:    pulumi.String("dev"),
+				Content: static.IpAddress,
+				Type:    pulumi.String("A"),
+				Proxied: pulumi.Bool(true),
+			})
+			if err != nil {
+				return err
+			}
+
 			return nil
 		})
 
