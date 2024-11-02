@@ -8,6 +8,18 @@ services:
   statamic:
     image: skulpture/brittle-systems:${TAG:-latest}
     restart: unless-stopped
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    command: >
+      bash -c "
+        touch .env &&
+        php artisan optimize:clear &&
+        php artisan optimize &&
+        # build frontend
+        pnpm install &&
+        pnpm build &&
+        # see `start-container`
+        /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"
     environment:
       WWWUSER: ${WWWUSER}
       LARAVEL_SAIL: 1
