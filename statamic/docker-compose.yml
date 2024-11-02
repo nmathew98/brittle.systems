@@ -41,7 +41,7 @@ services:
       VITE_APP_NAME: ${APP_NAME}
       APP_ENV: production
     volumes:
-      - .:/var/www/html
+      - ~/brittle-systems-master/statamic:/var/www/html
     deploy:
       mode: replicated
       replicas: 1
@@ -85,7 +85,7 @@ services:
       VITE_APP_NAME: ${APP_NAME}
       APP_ENV: development
     volumes:
-      - .:/var/www/html
+      - ~/brittle-systems-dev/statamic:/var/www/html
     deploy:
       mode: replicated
       replicas: 1

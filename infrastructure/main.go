@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/dogmatiq/ferrite"
@@ -78,7 +79,7 @@ func main() {
 				return err
 			}
 
-			_, err = cloudflare.NewRecord(ctx, DROPLET_INSTANCE_NAME.Value(), &cloudflare.RecordArgs{
+			_, err = cloudflare.NewRecord(ctx, fmt.Sprintf("%s-dev", DROPLET_INSTANCE_NAME.Value()), &cloudflare.RecordArgs{
 				ZoneId:  pulumi.String(CLOUDFLARE_ZONE_ID.Value()),
 				Name:    pulumi.String("dev"),
 				Content: static.IpAddress,
