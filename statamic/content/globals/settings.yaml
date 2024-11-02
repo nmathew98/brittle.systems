@@ -1,0 +1,13 @@
+id: 9242876a-41c4-42f8-96f8-ac92d6025406
+title: Settings
+data:
+  site_name: 'Brittle systems'
+  social:
+    -
+      name: Github
+      url: 'https://github.com/skulpturenz'
+      icon: site/social-icons/github.svg
+    -
+      name: Email
+      url: 'mailto:hey@skulpture.xyz'
+      icon: site/social-icons/email.svg

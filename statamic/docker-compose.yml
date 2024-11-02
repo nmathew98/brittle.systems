@@ -6,7 +6,7 @@ networks:
 
 services:
   statamic-prod:
-    image: skulpture/brittle-systems:${TAG:-latest}
+    image: skulpture/brittle-systems
     restart: unless-stopped
     extra_hosts:
       - host.docker.internal:host-gateway
@@ -15,6 +15,7 @@ services:
       -c "
        touch .env &&
        php artisan optimize:clear &&
+       php artisan config:cache &&
        php artisan optimize &&
        # build frontend
        pnpm install &&
@@ -31,15 +32,26 @@ services:
       APP_TIMEZONE: ${APP_TIMEZONE}
       SESSION_DOMAIN: ${SESSION_DOMAIN}
       CACHE_STORE: ${CACHE_STORE}
-      APP_URL: ${APP_URL}
-      DB_CONECTION: ${DB_CONECTION}
+      APP_URL: https://brittle.systems
+      DB_CONNECTION: ${DB_CONNECTION}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
       APP_MAINTENANCE_DRIVER: ${APP_MAINTENANCE_DRIVER}
-      APP_DEBUG: ${APP_DEBUG}
+      APP_DEBUG: "false"
       SESSION_ENCRYPT: ${SESSION_ENCRYPT}
       STATAMIC_API_ENABLED: ${STATAMIC_API_ENABLED}
       LOG_LEVEL: ${LOG_LEVEL}
       VITE_APP_NAME: ${APP_NAME}
       APP_ENV: production
+      STATAMIC_OAUTH_ENABLED: "true"
+      OAUTH_KEYCLOAK_CLIENT_ID: ${OAUTH_KEYCLOAK_CLIENT_ID}
+      OAUTH_KEYCLOAK_CLIENT_SECRET: ${OAUTH_KEYCLOAK_CLIENT_SECRET}
+      OAUTH_KEYCLOAK_REDIRECT_URI: https://brittle.systems/oauth/keycloak/callback
+      OAUTH_KEYCLOAK_BASE_URL: ${OAUTH_KEYCLOAK_BASE_URL}
+      OAUTH_KEYCLOAK_REALM: ${OAUTH_KEYCLOAK_REALM}
     volumes:
       - ~/brittle-systems-master/statamic:/var/www/html
     deploy:
@@ -50,7 +62,7 @@ services:
         soft: 20000
         hard: 20000
   statamic-dev:
-    image: skulpture/brittle-systems:${TAG:-latest}
+    image: skulpture/brittle-systems:dev
     restart: unless-stopped
     extra_hosts:
       - host.docker.internal:host-gateway
@@ -59,6 +71,7 @@ services:
       -c "
        touch .env &&
        php artisan optimize:clear &&
+       php artisan config:cache &&
        php artisan optimize &&
        # build frontend
        pnpm install &&
@@ -75,15 +88,26 @@ services:
       APP_TIMEZONE: ${APP_TIMEZONE}
       SESSION_DOMAIN: ${SESSION_DOMAIN}
       CACHE_STORE: ${CACHE_STORE}
-      APP_URL: ${APP_URL}
-      DB_CONECTION: ${DB_CONECTION}
+      APP_URL: https://dev.brittle.systems
+      DB_CONNECTION: ${DB_CONNECTION}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
       APP_MAINTENANCE_DRIVER: ${APP_MAINTENANCE_DRIVER}
-      APP_DEBUG: ${APP_DEBUG}
+      APP_DEBUG: "true"
       SESSION_ENCRYPT: ${SESSION_ENCRYPT}
       STATAMIC_API_ENABLED: ${STATAMIC_API_ENABLED}
       LOG_LEVEL: ${LOG_LEVEL}
       VITE_APP_NAME: ${APP_NAME}
       APP_ENV: development
+      STATAMIC_OAUTH_ENABLED: "true"
+      OAUTH_KEYCLOAK_CLIENT_ID: ${OAUTH_KEYCLOAK_CLIENT_ID}
+      OAUTH_KEYCLOAK_CLIENT_SECRET: ${OAUTH_KEYCLOAK_CLIENT_SECRET}
+      OAUTH_KEYCLOAK_REDIRECT_URI: https://dev.brittle.systems/oauth/keycloak/callback
+      OAUTH_KEYCLOAK_BASE_URL: ${OAUTH_KEYCLOAK_BASE_URL}
+      OAUTH_KEYCLOAK_REALM: ${OAUTH_KEYCLOAK_REALM}
     volumes:
       - ~/brittle-systems-dev/statamic:/var/www/html
     deploy:
