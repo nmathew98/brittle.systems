@@ -17,6 +17,7 @@ services:
        php artisan optimize:clear &&
        php artisan config:cache &&
        php artisan optimize &&
+       php artisan migrate &&
        # build frontend
        pnpm install &&
        pnpm build &&
@@ -73,6 +74,7 @@ services:
        php artisan optimize:clear &&
        php artisan config:cache &&
        php artisan optimize &&
+       php artisan migrate &&
        # build frontend
        pnpm install &&
        pnpm build &&
